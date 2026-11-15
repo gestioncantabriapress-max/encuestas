@@ -69,11 +69,22 @@
 
   /* pestañas: solo en móvil */
   .cp-tabs{display:none}
+  .cp-mini{display:none}
   @media (max-width:760px){
     .cp-head{flex-wrap:nowrap;align-items:center;padding-right:10px}
     .cp-title{display:none}
     .cp-tag{font-size:13px;padding:9px 12px 8px}
     .cp-count{font-size:12px;padding:0;text-align:right}
+    /* recuadro plegado */
+    .cp-mini{display:flex;align-items:center;gap:10px;padding:10px 12px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+    .cp-mini .mini-seats{display:flex;gap:3px;flex:none}
+    .cp-mini .ms{width:18px;height:18px;border-radius:50%}
+    .cp-mini .mini-txt{flex:1;font-size:13px;line-height:1.3}
+    .cp-mini .mini-txt b{font-weight:700}
+    .cp-mini .mini-txt small{display:block;color:var(--muted);font-size:11px}
+    .cp-mini .mini-btn{flex:none;background:var(--accent);color:#fff;border:0;font:700 11px Roboto,sans-serif;text-transform:uppercase;padding:7px 9px;cursor:pointer;white-space:nowrap}
+    .cp-banner[data-open="0"] .cp-more{display:none}
+    .cp-banner[data-open="1"] .cp-mini{border-bottom:1px solid var(--line)}
     .cp-tabs{display:flex;border-bottom:1px solid var(--line)}
     .cp-tabs button{flex:1;background:none;border:0;border-bottom:3px solid transparent;padding:9px 0 7px;font:700 13px Roboto,sans-serif;text-transform:uppercase;color:var(--muted);cursor:pointer}
     .cp-tabs button.on{color:var(--accent);border-bottom-color:var(--accent)}
@@ -224,6 +235,12 @@ function renderPolls(){
     </div>`).join("");
 
   el.innerHTML = header("Así van las encuestas en Cantabria") + `
+    <div class="cp-mini" role="button" aria-expanded="false">
+      <div class="mini-seats">${c.partidos.flatMap(x=>Array(x.s).fill(x.c)).map(col=>`<span class="ms" style="background:${col}"></span>`).join("")}</div>
+      <div class="mini-txt"><b>Cantabria:</b> ${c.partidos.map(x=>`${x.n} ${x.s}`).join(" · ")}<small>España: ${m.partidos.slice(0,3).map(x=>`${x.n} ${fmt(x.v)}%`).join(" · ")}</small></div>
+      <button class="mini-btn" type="button">Ver más ▾</button>
+    </div>
+    <div class="cp-more">
     <div class="cp-tabs" role="tablist">
       <button data-t="cantabria" class="on" role="tab">Cantabria</button>
       <button data-t="espana" role="tab">España</button>
@@ -254,8 +271,18 @@ function renderPolls(){
         <div class="src">${u.fuente}</div>
       </div>
     </div>
-    <div class="cp-foot"><span><b>CantabriaPress</b> · Actualizado: ${DATA.actualizado}</span><span class="m-hide">Las encuestas no se publican del 24 al 28 de noviembre (LOREG, art. 69.7).</span></div>`;
+    <div class="cp-foot"><span><b>CantabriaPress</b> · Actualizado: ${DATA.actualizado}</span><span class="m-hide">Las encuestas no se publican del 24 al 28 de noviembre (LOREG, art. 69.7).</span></div>
+    </div>`;
   el.dataset.tab = "cantabria";
+  el.dataset.open = "0";
+  const mini = el.querySelector(".cp-mini"), mbtn = el.querySelector(".mini-btn");
+  mini.addEventListener("click", ()=>{
+    const open = el.dataset.open !== "1";
+    el.dataset.open = open ? "1" : "0";
+    mini.setAttribute("aria-expanded", open);
+    mbtn.textContent = open ? "Cerrar ▴" : "Ver más ▾";
+    if (typeof sendHeight==="function") sendHeight();
+  });
   el.querySelectorAll(".cp-tabs button").forEach(b=>b.addEventListener("click",()=>{
     el.dataset.tab = b.dataset.t;
     el.querySelectorAll(".cp-tabs button").forEach(x=>x.classList.toggle("on", x===b));
