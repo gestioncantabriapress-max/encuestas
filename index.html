@@ -67,11 +67,29 @@
   .cp-quiet .big{font-weight:900;font-size:28px;color:var(--accent);margin-bottom:6px}
   .cp-quiet p{font-size:13px;color:var(--muted);max-width:560px;margin:0 auto}
 
+  /* pestañas: solo en móvil */
+  .cp-tabs{display:none}
   @media (max-width:760px){
-    .cp-body{grid-template-columns:1fr}
-    .cp-col + .cp-col{border-left:0;border-top:1px solid var(--line)}
-    .cp-title{font-size:18px;padding-left:14px}
-    .cp-count{padding-left:14px;padding-top:0}
+    .cp-head{flex-wrap:nowrap;align-items:center;padding-right:10px}
+    .cp-title{display:none}
+    .cp-tag{font-size:13px;padding:9px 12px 8px}
+    .cp-count{font-size:12px;padding:0;text-align:right}
+    .cp-tabs{display:flex;border-bottom:1px solid var(--line)}
+    .cp-tabs button{flex:1;background:none;border:0;border-bottom:3px solid transparent;padding:9px 0 7px;font:700 13px Roboto,sans-serif;text-transform:uppercase;color:var(--muted);cursor:pointer}
+    .cp-tabs button.on{color:var(--accent);border-bottom-color:var(--accent)}
+    .cp-body{display:block}
+    .cp-col{padding:12px 14px}
+    .cp-col + .cp-col{border-left:0;border-top:0}
+    .cp-banner[data-tab="cantabria"] .t-es,
+    .cp-banner[data-tab="espana"] .t-ca{display:none}
+    .m-hide{display:none !important}
+    .cseat{width:38px;height:38px;font-size:10px}
+    .cant-sum{margin:4px 0 8px}
+    .cant-polls{margin-bottom:6px}
+    .cp-h{margin-bottom:6px}
+    .row{margin:5px 0}
+    .seats{margin-top:2px}
+    .cp-foot{padding:6px 14px}
   }
 </style>
 </head>
@@ -153,7 +171,7 @@ function header(sub){
   const d = daysLeft();
   return `<div class="cp-head">
     <div class="cp-kicker"><span class="cp-tag">Cantabria · 29-N</span><span class="cp-title">${sub}</span></div>
-    <div class="cp-count">${d>0?`Faltan <b>${d}</b> ${d===1?"día":"días"} para las elecciones generales`:"Hoy se vota"}</div>
+    <div class="cp-count">${d>0?`Faltan <b>${d}</b> ${d===1?"día":"días"}<span class="m-hide"> para las elecciones generales</span>`:"Hoy se vota"}</div>
   </div>`;
 }
 
@@ -206,31 +224,43 @@ function renderPolls(){
     </div>`).join("");
 
   el.innerHTML = header("Así van las encuestas en Cantabria") + `
+    <div class="cp-tabs" role="tablist">
+      <button data-t="cantabria" class="on" role="tab">Cantabria</button>
+      <button data-t="espana" role="tab">España</button>
+    </div>
     <div class="cp-body">
-      <div class="cp-col cant">
+      <div class="cp-col cant t-ca">
         <div class="cp-h">${c.titulo}</div>
         <div class="cant-seats">${cseats}</div>
         <div class="cant-list">${clist}</div>
         <p class="cant-sum">${c.resumen}</p>
         <ul class="cant-polls">${cpolls}</ul>
-        <div class="cp-h sub">${c.en2023.titulo}</div>
-        ${c23}
-        <div class="src">${c.fuente}</div>
+        <div class="m-hide">
+          <div class="cp-h sub">${c.en2023.titulo}</div>
+          ${c23}
+          <div class="src">${c.fuente}</div>
+        </div>
       </div>
-      <div class="cp-col">
+      <div class="cp-col t-es">
         <div class="cp-h">España · ${m.titulo}</div>
         ${bars}
         <div class="src">${m.fuente}</div>
       </div>
-      <div class="cp-col">
+      <div class="cp-col t-es">
         <div class="cp-h">España · ${u.titulo}</div>
-        ${hemicycle(ordered, u.total)}
+        <div class="m-hide">${hemicycle(ordered, u.total)}</div>
         <div class="seats">${seats}</div>
         <div class="maj">Mayoría absoluta: ${u.mayoria} · PP + Vox: ${der}</div>
         <div class="src">${u.fuente}</div>
       </div>
     </div>
-    <div class="cp-foot"><span><b>CantabriaPress</b> · Actualizado: ${DATA.actualizado}</span><span>Las encuestas no se publican del 24 al 28 de noviembre (LOREG, art. 69.7).</span></div>`;
+    <div class="cp-foot"><span><b>CantabriaPress</b> · Actualizado: ${DATA.actualizado}</span><span class="m-hide">Las encuestas no se publican del 24 al 28 de noviembre (LOREG, art. 69.7).</span></div>`;
+  el.dataset.tab = "cantabria";
+  el.querySelectorAll(".cp-tabs button").forEach(b=>b.addEventListener("click",()=>{
+    el.dataset.tab = b.dataset.t;
+    el.querySelectorAll(".cp-tabs button").forEach(x=>x.classList.toggle("on", x===b));
+    if (typeof sendHeight==="function") sendHeight();
+  }));
   requestAnimationFrame(()=>document.querySelectorAll(".bar").forEach(b=>b.style.width=b.dataset.w+"%"));
 }
 
@@ -261,7 +291,7 @@ else if (today < "2026-11-29") renderVeda();
 else renderResultados();
 
 /* Avisa a la página que lo contiene de la altura, para que el iframe se ajuste solo */
-function sendHeight(){ try{ parent.postMessage({cpEncuestasAltura: document.documentElement.scrollHeight}, "*"); }catch(e){} }
+function sendHeight(){ try{ parent.postMessage({cpEncuestasAltura: Math.ceil(document.getElementById("cp-banner").getBoundingClientRect().height) + 2}, "*"); }catch(e){} }
 window.addEventListener("load", sendHeight);
 window.addEventListener("resize", sendHeight);
 setTimeout(sendHeight, 600); setTimeout(sendHeight, 1500);
