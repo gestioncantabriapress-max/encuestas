@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Test 29-N: ¿con qué partido coincides? · CantabriaPress</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#111; --muted:#767676; --line:#ededed; --soft:#f7f7f7;
+    --accent:#2a8647; --accent-dark:#195136; --accent-soft:#f2f8f4;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:Roboto,Verdana,Geneva,sans-serif;color:var(--ink);background:transparent}
+  button{font-family:inherit;cursor:pointer}
+  a{color:var(--accent)}
+
+  .t-box{max-width:100%;background:#fff;border:1px solid var(--line)}
+  .t-head{display:flex;align-items:center;justify-content:space-between;gap:10px;border-bottom:2px solid var(--accent);padding-right:14px}
+  .t-tag{background:var(--accent);color:#fff;font-weight:500;font-size:14px;line-height:1;text-transform:uppercase;padding:9px 14px 8px;white-space:nowrap}
+  .t-head-r{font-size:12px;color:var(--muted)}
+
+  .t-pad{padding:18px 20px}
+  @media (max-width:600px){ .t-pad{padding:14px} }
+
+  /* inicio */
+  .t-title{font-weight:900;font-size:26px;line-height:1.15;margin-bottom:8px}
+  .t-lead{font-size:15px;line-height:1.5;color:#333;margin-bottom:14px;max-width:640px}
+  .t-parties{display:flex;flex-wrap:wrap;gap:6px 14px;margin:0 0 16px}
+  .t-parties span{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:500}
+  .dot{width:10px;height:10px;border-radius:50%;flex:none;display:inline-block}
+  .t-note{font-size:12px;color:var(--muted);line-height:1.5;margin-top:14px;max-width:640px}
+  .btn{background:var(--accent);color:#fff;border:0;font-weight:700;font-size:14px;text-transform:uppercase;padding:12px 22px}
+  .btn:hover{background:var(--accent-dark)}
+  .btn-ghost{background:none;border:1px solid var(--line);color:var(--ink);font-weight:500;font-size:13px;padding:9px 14px}
+
+  /* pregunta */
+  .t-prog{height:4px;background:var(--soft)}
+  .t-prog i{display:block;height:100%;background:var(--accent);transition:width .3s}
+  .t-meta{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:10px}
+  .t-topic{font-weight:700;text-transform:uppercase;color:var(--accent)}
+  .t-q{font-weight:700;font-size:21px;line-height:1.3;margin-bottom:16px;min-height:56px}
+  @media (max-width:600px){ .t-q{font-size:18px;min-height:0} }
+  .t-ans{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+  .t-ans button{background:#fff;border:1px solid #d9d9d9;padding:11px 4px;font-size:13px;font-weight:500;line-height:1.2;color:var(--ink)}
+  .t-ans button:hover{border-color:var(--accent);background:var(--accent-soft)}
+  .t-ans button.sel{background:var(--accent);border-color:var(--accent);color:#fff}
+  @media (max-width:600px){
+    .t-ans{grid-template-columns:1fr}
+    .t-ans button{padding:11px 12px;text-align:left;font-size:14px}
+  }
+  .t-nav{display:flex;justify-content:space-between;align-items:center;margin-top:12px}
+  .t-link{background:none;border:0;color:var(--muted);font-size:13px;text-decoration:underline;padding:4px 0}
+
+  /* resultados */
+  .t-res-h{font-weight:900;font-size:22px;margin-bottom:4px}
+  .t-res-sub{font-size:13px;color:var(--muted);margin-bottom:14px}
+  .r-row{display:grid;grid-template-columns:120px 1fr 52px;align-items:center;gap:10px;margin:9px 0}
+  .r-name{font-weight:700;font-size:14px;display:flex;align-items:center;gap:7px;white-space:nowrap}
+  .r-track{height:18px;background:var(--soft);overflow:hidden}
+  .r-bar{height:100%;width:0;transition:width .9s cubic-bezier(.2,.7,.2,1)}
+  .r-val{font-weight:900;font-size:16px;text-align:right;font-variant-numeric:tabular-nums}
+  .r-n{grid-column:2 / 4;font-size:11px;color:var(--muted);margin-top:-6px}
+  @media (max-width:600px){ .r-row{grid-template-columns:104px 1fr 46px} }
+
+  .t-warn{background:var(--accent-soft);border-left:3px solid var(--accent);padding:10px 12px;font-size:12.5px;line-height:1.5;margin:16px 0}
+  .t-det-h{font-weight:700;font-size:13px;text-transform:uppercase;margin:18px 0 8px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+  details{border-bottom:1px solid var(--line)}
+  summary{list-style:none;cursor:pointer;padding:10px 0;font-size:14px;line-height:1.35;display:flex;gap:8px;align-items:flex-start}
+  summary::-webkit-details-marker{display:none}
+  summary::before{content:"▸";color:var(--accent);flex:none}
+  details[open] summary::before{content:"▾"}
+  .you{display:inline-block;font-size:11px;font-weight:700;padding:2px 6px;background:var(--soft);margin-left:4px;white-space:nowrap}
+  .pos{display:grid;grid-template-columns:18px 104px 1fr;gap:6px;font-size:12.5px;line-height:1.4;padding:5px 0 5px 16px}
+  .pos b{font-weight:700}
+  .ico{font-weight:900;text-align:center}
+  .ico.p{color:#2a8647}.ico.n{color:#c62828}.ico.z{color:#999}
+  .pos small{color:var(--muted)}
+  .t-foot{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:8px 20px;background:var(--soft);border-top:1px solid var(--line);font-size:11px;color:var(--muted)}
+  .t-foot b{color:var(--accent)}
+  .hidden{display:none !important}
+  @media (max-width:600px){
+    .pos{grid-template-columns:18px 1fr;padding-left:4px}
+    .pos > span:last-child{grid-column:2}
+    .t-foot{padding:8px 14px}
+  }
+</style>
+</head>
+<body>
+<div class="t-box" id="app"></div>
+
+<script>
+/* ============================================================
+   PARTIDOS
+   ============================================================ */
+const PARTIES = [
+  { id:"pp",  n:"PP",            c:"#1d84ce" },
+  { id:"psoe",n:"PSOE",          c:"#e30613" },
+  { id:"vox", n:"Vox",           c:"#5ac035" },
+  { id:"fa",  n:"Frente Amplio", c:"#e4366e" },
+  { id:"pod", n:"Podemos",       c:"#6a2e8c" }
+];
+
+/* ============================================================
+   FUENTES
+   ============================================================ */
+const S = {
+  pp:   { t:"Programa del PP (Demócrata)", u:"https://www.democrata.es/elecciones-generales-espana/programa-electoral-pp-29n-propuestas/" },
+  vox:  { t:"Programa de Vox (Demócrata)", u:"https://www.democrata.es/elecciones-generales-espana/programa-electoral-vox-2026-propuestas-pdf/" },
+  psoe: { t:"Programa del PSOE (Demócrata)", u:"https://www.democrata.es/elecciones-generales-espana/todas-claves-programa-psoe-29n-100000-viviendas-ayudas-por-hijo-nuevos-impuestos/" },
+  psoe2:{ t:"Posiciones del PSOE (PolíticaElectoral)", u:"https://www.politicaelectoral.com/es/espana/generales-2026/nacional/psoe" },
+  fa:   { t:"Programa de Frente Amplio (Demócrata)", u:"https://www.democrata.es/elecciones-generales-espana/programa-electoral-frente-amplio-29n/" },
+  fa2:  { t:"Posiciones de Sumar/Frente Amplio (PolíticaElectoral)", u:"https://www.politicaelectoral.com/es/espana/generales-2026/nacional/sumar" },
+  pod:  { t:"Posiciones de Podemos (PolíticaElectoral)", u:"https://www.politicaelectoral.com/es/espana/generales-2026/nacional/podemos" },
+  t5:   { t:"Programas del 29N (Telecinco)", u:"https://www.telecinco.es/noticias/espana/20261113/elecciones-generales-2026-programas-electorales-pp-psoe-vox-sumar-podemos_18_020555572.html" },
+  bol:  { t:"Vivienda en los programas (El Boletín)", u:"https://www.elboletin.com/los-programas-electorales-del-29n-enfrentan-las-propuestas-de-los-partidos-sobre-vivienda-impuestos-y-salarios/" },
+  a14:  { t:"Programa del PP (Artículo 14)", u:"https://www.articulo14.es/politica/de-la-prioridad-nacional-a-las-pulseras-antimaltrato-las-claves-del-programa-electoral-de-feijoo-20261111.html" },
+  amn:  { t:"Votación de la Ley de Amnistía, 2024 (El Independiente)", u:"https://www.elindependiente.com/espana/2024/05/30/el-gobierno-y-sus-socios-aprueban-la-ley-de-amnistia-en-el-congreso-tras-un-choque-directo-con-diputados-de-vox/" },
+  ara:  { t:"Vox y la amnistía (Ara)", u:"https://es.ara.cat/politica/vox-no-podra-echar-amnistia-gobierne_1_5814765.html" },
+  cmp:  { t:"Comparavoto", u:"https://comparavoto.es/" }
+};
+
+/* ============================================================
+   PREGUNTAS
+   p: +1 a favor · -1 en contra · 0 sin propuesta encontrada
+   ============================================================ */
+const Z = (txt) => ({ p:0, t: txt || "No hemos encontrado una propuesta concreta sobre esto.", s:null });
+const Q = [
+  { topic:"Vivienda",
+    q:"Hay que derogar la Ley de Vivienda, incluidas las zonas tensionadas y los índices de precios del alquiler.",
+    pos:{
+      pp:  { p: 1, t:"Propone derogarla, incluidas las zonas tensionadas y los índices de referencia.", s:"pp" },
+      psoe:{ p:-1, t:"Propone congelar temporalmente las rentas que superen los índices en zonas tensionadas.", s:"psoe" },
+      vox: { p: 1, t:"Propone derogar la Ley de Vivienda.", s:"vox" },
+      fa:  { p:-1, t:"Propone limitar los alquileres en las zonas tensionadas.", s:"fa" },
+      pod: { p:-1, t:"Propone bajar por ley todos los alquileres un 40%.", s:"pod" }
+    }},
+  { topic:"Vivienda",
+    q:"El Estado debe invertir mucho más en construir vivienda pública, en torno al 1% del PIB cada año.",
+    pos:{
+      pp:  { p:-1, t:"Prioriza los incentivos fiscales y facilitar la construcción frente a más inversión pública.", s:"bol" },
+      psoe:{ p: 1, t:"Propone el 1% del PIB anual y un parque estatal de 100.000 viviendas.", s:"psoe" },
+      vox: { p:-1, t:"Prioriza liberalizar suelo y bajar impuestos frente a más inversión pública.", s:"bol" },
+      fa:  { p: 1, t:"Propone el 1% del PIB anual para 1,5 millones de viviendas públicas en 12 años.", s:"fa" },
+      pod: { p: 1, t:"Propone ampliar el parque público, también con viviendas de grandes propietarios.", s:"pod" }
+    }},
+  { topic:"Vivienda",
+    q:"La ocupación ilegal de viviendas debe resolverse con desalojos en un plazo de 24 a 48 horas.",
+    pos:{
+      pp:  { p: 1, t:"Propone desalojar a los ocupantes ilegales en 48 horas.", s:"pp" },
+      psoe: Z(),
+      vox: { p: 1, t:"Propone desalojar en menos de 24 horas.", s:"vox" },
+      fa:  Z(),
+      pod: Z()
+    }},
+  { topic:"Trabajo",
+    q:"Hay que reducir por ley la jornada laboral sin bajar el sueldo.",
+    pos:{
+      pp:  Z("Su programa no recoge medidas sobre la jornada laboral."),
+      psoe:{ p: 1, t:"Propone completar la jornada de 37,5 horas sin pérdida salarial.", s:"psoe" },
+      vox: { p:-1, t:"Se opone a una reducción general de la jornada por ley.", s:"t5" },
+      fa:  { p: 1, t:"Propone llegar a 32 horas sin bajar el sueldo, empezando por 37,5.", s:"fa" },
+      pod: { p: 1, t:"Defiende reducir la jornada sin bajar el sueldo, con el objetivo de 30 horas.", s:"pod" }
+    }},
+  { topic:"Impuestos",
+    q:"Hay que subir los impuestos a las grandes fortunas y a las rentas del capital más altas.",
+    pos:{
+      pp:  { p:-1, t:"Plantea rebajas fiscales y eliminar impuestos que considera que frenan la inversión.", s:"a14" },
+      psoe:{ p: 1, t:"Propone subir los tipos del capital hasta el 35% y gravar más los grandes patrimonios.", s:"psoe" },
+      vox: { p:-1, t:"Propone una rebaja general de impuestos.", s:"vox" },
+      fa:  { p: 1, t:"Propone un nuevo impuesto a las grandes fortunas.", s:"fa" },
+      pod: { p: 1, t:"Propone un impuesto a las grandes fortunas y más impuestos a bancos y energéticas.", s:"pod" }
+    }},
+  { topic:"Impuestos",
+    q:"Hay que bajar el IVA de la luz y de los alimentos básicos.",
+    pos:{
+      pp:  { p: 1, t:"Propone bajar el IVA de la energía y mantener el 0% en alimentos básicos.", s:"t5" },
+      psoe: Z(),
+      vox: { p: 1, t:"Propone rebajar los tipos de IVA y los impuestos sobre la electricidad.", s:"vox" },
+      fa:  { p: 1, t:"Propone bajar el IVA de los productos básicos y de la energía.", s:"fa" },
+      pod: Z()
+    }},
+  { topic:"Energía",
+    q:"Hay que alargar la vida de las centrales nucleares.",
+    pos:{
+      pp:  { p: 1, t:"Propone eliminar en 100 días el calendario de cierre de las centrales.", s:"pp" },
+      psoe:{ p:-1, t:"Propone mantener el calendario de cierre hasta 2035.", s:"psoe" },
+      vox: { p: 1, t:"Propone derogar el calendario de cierre y estudiar nuevas centrales.", s:"vox" },
+      fa:  { p:-1, t:"Defiende mantener el cierre en 2035 y no construir nuevas centrales.", s:"fa2" },
+      pod: { p:-1, t:"Defiende abandonar la energía nuclear.", s:"pod" }
+    }},
+  { topic:"Inmigración",
+    q:"Hay que prohibir por ley las regularizaciones masivas de inmigrantes.",
+    pos:{
+      pp:  { p: 1, t:"Propone prohibir por ley las regularizaciones masivas.", s:"pp" },
+      psoe:{ p:-1, t:"Defiende la regularización extraordinaria aprobada en 2026.", s:"psoe2" },
+      vox: { p: 1, t:"Propone prohibirlas e impedir regularizar a quien entró de forma irregular.", s:"vox" },
+      fa:  { p:-1, t:"Defiende un mecanismo permanente de regularización.", s:"fa2" },
+      pod: { p:-1, t:"Propone regularizar a todas las personas que viven y trabajan en España.", s:"pod" }
+    }},
+  { topic:"Política",
+    q:"Hay que derogar la Ley de Amnistía.",
+    pos:{
+      pp:  { p: 1, t:"Propone derogarla.", s:"pp" },
+      psoe:{ p:-1, t:"Defiende mantenerla.", s:"psoe2" },
+      vox: { p: 1, t:"Promete derogarla.", s:"ara" },
+      fa:  { p:-1, t:"Sumar, el espacio del que procede, votó a favor de la ley en 2024.", s:"amn" },
+      pod: { p:-1, t:"Votó a favor de la ley en 2024.", s:"amn" }
+    }},
+  { topic:"Derechos",
+    q:"Hay que reforzar el derecho al aborto, incluso incluyéndolo en la Constitución.",
+    pos:{
+      pp:  Z("Su programa no recoge propuestas sobre el aborto."),
+      psoe:{ p: 1, t:"Propone reforzar su protección e impulsó incluirlo en la Constitución.", s:"psoe2" },
+      vox: { p:-1, t:"Propone proteger la vida desde la concepción.", s:"vox" },
+      fa:  { p: 1, t:"Rechaza cualquier retroceso y defiende garantizarlo en la sanidad pública.", s:"t5" },
+      pod: { p: 1, t:"Defiende garantizarlo en la sanidad pública.", s:"pod" }
+    }},
+  { topic:"Sanidad",
+    q:"La sanidad pública debe gestionarse de forma pública, limitando la gestión privada.",
+    pos:{
+      pp:  Z(),
+      psoe:{ p: 1, t:"Impulsó en 2026 una ley para priorizar la gestión pública.", s:"psoe2" },
+      vox: { p:-1, t:"Propone colaboración público-privada para reducir las listas de espera.", s:"vox" },
+      fa:  { p: 1, t:"Defiende la ley de gestión pública de la sanidad.", s:"fa2" },
+      pod: { p: 1, t:"Propone prohibir la gestión privada en la sanidad pública.", s:"pod" }
+    }},
+  { topic:"Democracia",
+    q:"Hay que bajar la edad para votar a los 16 años.",
+    pos:{
+      pp:  Z(),
+      psoe:{ p: 1, t:"Propone rebajar la edad de voto a 16 años.", s:"psoe" },
+      vox: Z(),
+      fa:  { p: 1, t:"Propone el voto a los 16 años.", s:"cmp" },
+      pod: Z()
+    }},
+  { topic:"Medio ambiente",
+    q:"Hay que eliminar las zonas de bajas emisiones de las ciudades.",
+    pos:{
+      pp:  Z(),
+      psoe: Z(),
+      vox: { p: 1, t:"Propone eliminarlas.", s:"vox" },
+      fa:  Z(),
+      pod: { p:-1, t:"Defiende ampliar las zonas de bajas emisiones.", s:"pod" }
+    }}
+];
+
+const ANS = [
+  { v: 2, l:"Muy de acuerdo" },
+  { v: 1, l:"De acuerdo" },
+  { v: 0, l:"Neutral" },
+  { v:-1, l:"En desacuerdo" },
+  { v:-2, l:"Muy en desacuerdo" }
+];
+const ansLabel = v => v===null||v===undefined ? "Sin responder" : ANS.find(a=>a.v===v).l;
+
+/* ============================================================
+   ESTADO Y PANTALLAS
+   ============================================================ */
+const app = document.getElementById("app");
+let i = 0, answers = new Array(Q.length).fill(null);
+
+const head = (r) => `<div class="t-head"><span class="t-tag">Cantabria · 29-N</span><span class="t-head-r">${r||""}</span></div>`;
+const foot = `<div class="t-foot"><span><b>CantabriaPress</b> · Test elaborado con los programas publicados</span><span>Actualizado: 17 nov 2026</span></div>`;
+
+function start(){
+  app.innerHTML = head("Test electoral") + `
+  <div class="t-pad">
+    <h1 class="t-title">¿Con qué partido coincides?</h1>
+    <p class="t-lead">Responde a ${Q.length} afirmaciones sobre vivienda, impuestos, trabajo, energía y otros temas de la campaña. Al final verás con qué partido coinciden más tus respuestas, y en qué se basa cada posición.</p>
+    <div class="t-parties">${PARTIES.map(p=>`<span><i class="dot" style="background:${p.c}"></i>${p.n}</span>`).join("")}</div>
+    <button class="btn" id="go">Empezar el test</button>
+    <p class="t-note">Las posiciones de cada partido salen de sus programas y propuestas publicadas, con la fuente enlazada en cada caso. No es una recomendación de voto. Incluimos los partidos que se presentan en Cantabria y tienen propuestas públicas suficientes para comparar; Frente Obrero y PCTE no se incluyen por falta de propuestas documentadas.</p>
+  </div>` + foot;
+  document.getElementById("go").onclick = () => { i = 0; question(); };
+  sendHeight();
+}
+
+function question(){
+  const q = Q[i];
+  app.innerHTML = head(`${i+1} de ${Q.length}`) + `
+  <div class="t-prog"><i style="width:${(i/Q.length)*100}%"></i></div>
+  <div class="t-pad">
+    <div class="t-meta"><span class="t-topic">${q.topic}</span><span>Pregunta ${i+1}/${Q.length}</span></div>
+    <p class="t-q">${q.q}</p>
+    <div class="t-ans">${ANS.map(a=>`<button data-v="${a.v}" class="${answers[i]===a.v?'sel':''}">${a.l}</button>`).join("")}</div>
+    <div class="t-nav">
+      <button class="t-link" id="back" ${i===0?'style="visibility:hidden"':''}>← Anterior</button>
+      <button class="t-link" id="skip">Saltar pregunta →</button>
+    </div>
+  </div>` + foot;
+  app.querySelectorAll(".t-ans button").forEach(b => b.onclick = () => { answers[i] = +b.dataset.v; next(); });
+  document.getElementById("skip").onclick = () => { answers[i] = null; next(); };
+  document.getElementById("back").onclick = () => { if(i>0){ i--; question(); } };
+  sendHeight();
+}
+function next(){ if (i < Q.length-1){ i++; question(); } else results(); }
+
+function score(){
+  return PARTIES.map(p=>{
+    let sum = 0, max = 0, cnt = 0;
+    Q.forEach((q,k)=>{
+      const pos = q.pos[p.id].p, a = answers[k];
+      if (pos===0 || a===null) return;
+      sum += a*pos; max += 2; cnt++;
+    });
+    const pct = max ? Math.round((sum+max)/(2*max)*100) : null;
+    return { ...p, pct, cnt };
+  }).sort((a,b)=>(b.pct??-1)-(a.pct??-1));
+}
+
+function results(){
+  const r = score();
+  const answered = answers.filter(a=>a!==null).length;
+  const icon = p => p===1?'<span class="ico p">✓</span>':p===-1?'<span class="ico n">✗</span>':'<span class="ico z">–</span>';
+  const word = p => p===1?"A favor":p===-1?"En contra":"Sin propuesta";
+  const src = s => s ? ` <small>· <a href="${S[s].u}" target="_blank" rel="noopener">${S[s].t}</a></small>` : "";
+
+  app.innerHTML = head("Tus resultados") + `
+  <div class="t-prog"><i style="width:100%"></i></div>
+  <div class="t-pad">
+    <h2 class="t-res-h">Tus resultados</h2>
+    <p class="t-res-sub">Has respondido ${answered} de ${Q.length} preguntas. El porcentaje indica cuánto coinciden tus respuestas con las posiciones de cada partido.</p>
+    ${answered===0 ? `<p class="t-res-sub">No has respondido ninguna pregunta, así que no podemos calcular coincidencias.</p>` :
+      r.map(p=>`
+      <div class="r-row">
+        <div class="r-name"><i class="dot" style="background:${p.c}"></i>${p.n}</div>
+        <div class="r-track"><div class="r-bar" data-w="${p.pct??0}" style="background:${p.c}"></div></div>
+        <div class="r-val">${p.pct===null?"–":p.pct+"%"}</div>
+        <div class="r-n">Comparado en ${p.cnt} ${p.cnt===1?"pregunta":"preguntas"}</div>
+      </div>`).join("")}
+    <div class="t-warn">Esto <b>no es una recomendación de voto</b>. Solo compara tus respuestas con lo que cada partido propone en estos ${Q.length} temas. Cuando un partido no tiene una propuesta sobre un tema, esa pregunta no cuenta para él; por eso cada partido se compara en un número distinto de preguntas.</div>
+    <div class="t-det-h">Pregunta a pregunta</div>
+    ${Q.map((q,k)=>`
+      <details>
+        <summary><span>${q.q} <span class="you">Tú: ${ansLabel(answers[k])}</span></span></summary>
+        ${PARTIES.map(p=>{ const x=q.pos[p.id]; return `
+          <div class="pos">${icon(x.p)}<b><i class="dot" style="background:${p.c}"></i> ${p.n}</b><span><b>${word(x.p)}.</b> ${x.t}${src(x.s)}</span></div>`; }).join("")}
+      </details>`).join("")}
+    <div class="t-nav" style="margin-top:16px">
+      <button class="btn-ghost" id="again">Repetir el test</button>
+    </div>
+    <p class="t-note">Posiciones recogidas el 17 de noviembre de 2026 de los programas electorales y propuestas publicadas. Algunas posiciones de Frente Amplio y Podemos proceden de documentos y votaciones anteriores porque sus programas completos no estaban disponibles; se indica en cada fuente.</p>
+  </div>` + foot;
+  document.getElementById("again").onclick = () => { answers = new Array(Q.length).fill(null); start(); };
+  app.querySelectorAll("details").forEach(d=>d.addEventListener("toggle", sendHeight));
+  requestAnimationFrame(()=>app.querySelectorAll(".r-bar").forEach(b=>b.style.width=b.dataset.w+"%"));
+  sendHeight();
+  try { app.scrollIntoView({block:"start"}); parent.postMessage({cpTestTop:true},"*"); } catch(e){}
+}
+
+/* Altura para el iframe */
+function sendHeight(){
+  setTimeout(()=>{ try{ parent.postMessage({cpTestAltura: Math.ceil(app.getBoundingClientRect().height)+2}, "*"); }catch(e){} }, 30);
+}
+window.addEventListener("resize", sendHeight);
+window.addEventListener("load", sendHeight);
+
+start();
+</script>
+</body>
+</html>
