@@ -15,71 +15,105 @@
   body{font-family:Roboto,Verdana,Geneva,sans-serif;color:var(--ink);background:transparent}
   button{font-family:inherit;cursor:pointer}
   a{color:var(--accent)}
-
-  .t-box{max-width:100%;background:#fff;border:1px solid var(--line)}
+  .t-box{background:#fff;border:1px solid var(--line);overflow:hidden}
   .t-head{display:flex;align-items:center;justify-content:space-between;gap:10px;border-bottom:2px solid var(--accent);padding-right:14px}
   .t-tag{background:var(--accent);color:#fff;font-weight:500;font-size:14px;line-height:1;text-transform:uppercase;padding:9px 14px 8px;white-space:nowrap}
   .t-head-r{font-size:12px;color:var(--muted)}
+  .t-pad{padding:22px 24px}
+  @media (max-width:600px){ .t-pad{padding:16px 14px} }
+  .fade{animation:fade .35s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 
-  .t-pad{padding:18px 20px}
-  @media (max-width:600px){ .t-pad{padding:14px} }
-
-  /* inicio */
-  .t-title{font-weight:900;font-size:26px;line-height:1.15;margin-bottom:8px}
-  .t-lead{font-size:15px;line-height:1.5;color:#333;margin-bottom:14px;max-width:640px}
-  .t-parties{display:flex;flex-wrap:wrap;gap:6px 14px;margin:0 0 16px}
-  .t-parties span{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:500}
-  .dot{width:10px;height:10px;border-radius:50%;flex:none;display:inline-block}
-  .t-note{font-size:12px;color:var(--muted);line-height:1.5;margin-top:14px;max-width:640px}
-  .btn{background:var(--accent);color:#fff;border:0;font-weight:700;font-size:14px;text-transform:uppercase;padding:12px 22px}
-  .btn:hover{background:var(--accent-dark)}
-  .btn-ghost{background:none;border:1px solid var(--line);color:var(--ink);font-weight:500;font-size:13px;padding:9px 14px}
-
-  /* pregunta */
-  .t-prog{height:4px;background:var(--soft)}
-  .t-prog i{display:block;height:100%;background:var(--accent);transition:width .3s}
-  .t-meta{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:10px}
-  .t-topic{font-weight:700;text-transform:uppercase;color:var(--accent)}
-  .t-q{font-weight:700;font-size:21px;line-height:1.3;margin-bottom:16px;min-height:56px}
-  @media (max-width:600px){ .t-q{font-size:18px;min-height:0} }
-  .t-ans{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
-  .t-ans button{background:#fff;border:1px solid #d9d9d9;padding:11px 4px;font-size:13px;font-weight:500;line-height:1.2;color:var(--ink)}
-  .t-ans button:hover{border-color:var(--accent);background:var(--accent-soft)}
-  .t-ans button.sel{background:var(--accent);border-color:var(--accent);color:#fff}
+  /* ---------- portada ---------- */
+  .hero{display:grid;grid-template-columns:1.3fr 1fr;gap:24px;align-items:center}
+  .hero h1{font-weight:900;font-size:34px;line-height:1.1;margin-bottom:10px}
+  .hero h1 em{font-style:normal;color:var(--accent)}
+  .hero p{font-size:15px;line-height:1.5;color:#333;margin-bottom:16px}
+  .facts{display:flex;gap:18px;margin:0 0 18px;flex-wrap:wrap}
+  .facts div{font-size:12px;color:var(--muted);line-height:1.3}
+  .facts b{display:block;font-size:22px;font-weight:900;color:var(--ink)}
+  .hero-art{width:100%;max-width:300px;justify-self:center}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:18px}
+  .chip{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:700;color:#fff;padding:5px 10px;border-radius:999px}
+  .topics{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+  .topics span{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:#333;background:var(--soft);padding:5px 9px 5px 6px;border-radius:999px}
+  .topics svg{width:16px;height:16px;stroke:var(--accent)}
   @media (max-width:600px){
-    .t-ans{grid-template-columns:1fr}
-    .t-ans button{padding:11px 12px;text-align:left;font-size:14px}
+    .hero{grid-template-columns:1fr}
+    .hero-art{max-width:170px;order:-1}
+    .hero h1{font-size:26px}
   }
-  .t-nav{display:flex;justify-content:space-between;align-items:center;margin-top:12px}
+  .btn{background:var(--accent);color:#fff;border:0;font-weight:700;font-size:15px;text-transform:uppercase;padding:14px 26px;letter-spacing:.02em}
+  .btn:hover{background:var(--accent-dark)}
+  .t-note{font-size:11.5px;color:var(--muted);line-height:1.5;margin-top:14px}
+
+  /* ---------- pregunta ---------- */
+  .steps{display:flex;gap:3px;padding:10px 24px 0}
+  .steps i{flex:1;height:5px;background:#e3e3e3;border-radius:3px}
+  .steps i.done{background:var(--accent)} .steps i.now{background:#9ccdae}
+  @media (max-width:600px){ .steps{padding:10px 14px 0} }
+  .qcard{text-align:center;padding:22px 24px 8px}
+  .qicon{width:74px;height:74px;border-radius:50%;background:var(--accent-soft);display:grid;place-items:center;margin:0 auto 10px}
+  .qicon svg{width:38px;height:38px;stroke:var(--accent)}
+  .qtopic{font-size:12px;font-weight:700;text-transform:uppercase;color:var(--accent);letter-spacing:.06em;margin-bottom:8px}
+  .qtext{font-weight:700;font-size:22px;line-height:1.3;max-width:640px;margin:0 auto 22px}
+  @media (max-width:600px){ .qtext{font-size:18px} .qicon{width:60px;height:60px} .qicon svg{width:30px;height:30px} }
+  .scale{display:flex;align-items:flex-start;justify-content:center;gap:4px;max-width:560px;margin:0 auto}
+  .scale .end{font-size:12px;font-weight:700;width:70px;padding-top:14px}
+  .scale .end.l{color:#2a8647;text-align:right} .scale .end.r{color:#c62828;text-align:left}
+  .opt{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;background:none;border:0;padding:4px 0}
+  .opt .c{border-radius:50%;border:3px solid var(--col);background:#fff;transition:transform .15s,background .15s;display:block}
+  .opt:hover .c{transform:scale(1.1);background:color-mix(in srgb,var(--col) 25%,#fff)}
+  .opt.sel .c{background:var(--col)}
+  .opt small{font-size:11px;color:#555;line-height:1.2;max-width:80px}
+  @media (max-width:600px){ .scale .end{display:none} .opt small{font-size:10px} }
+  .qnav{display:flex;justify-content:space-between;padding:14px 24px 18px}
+  @media (max-width:600px){ .qnav{padding:12px 14px 16px} }
   .t-link{background:none;border:0;color:var(--muted);font-size:13px;text-decoration:underline;padding:4px 0}
 
-  /* resultados */
-  .t-res-h{font-weight:900;font-size:22px;margin-bottom:4px}
-  .t-res-sub{font-size:13px;color:var(--muted);margin-bottom:14px}
-  .r-row{display:grid;grid-template-columns:120px 1fr 52px;align-items:center;gap:10px;margin:9px 0}
+  /* ---------- resultados ---------- */
+  .win{color:#fff;padding:26px 24px;text-align:center;position:relative}
+  .win small{display:block;font-size:13px;text-transform:uppercase;letter-spacing:.08em;opacity:.9}
+  .win .wn{font-weight:900;font-size:34px;line-height:1.1;margin:6px 0 2px}
+  .win .wp{font-weight:900;font-size:56px;line-height:1}
+  .win .wp span{font-size:22px;font-weight:700}
+  .win .wsub{font-size:12px;opacity:.85;margin-top:4px}
+  @media (max-width:600px){ .win .wn{font-size:26px} .win .wp{font-size:46px} }
+  .r-h{font-weight:700;font-size:13px;text-transform:uppercase;margin:4px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+  .r-row{display:grid;grid-template-columns:118px 1fr 50px;align-items:center;gap:10px;margin:10px 0}
   .r-name{font-weight:700;font-size:14px;display:flex;align-items:center;gap:7px;white-space:nowrap}
-  .r-track{height:18px;background:var(--soft);overflow:hidden}
-  .r-bar{height:100%;width:0;transition:width .9s cubic-bezier(.2,.7,.2,1)}
-  .r-val{font-weight:900;font-size:16px;text-align:right;font-variant-numeric:tabular-nums}
-  .r-n{grid-column:2 / 4;font-size:11px;color:var(--muted);margin-top:-6px}
-  @media (max-width:600px){ .r-row{grid-template-columns:104px 1fr 46px} }
-
-  .t-warn{background:var(--accent-soft);border-left:3px solid var(--accent);padding:10px 12px;font-size:12.5px;line-height:1.5;margin:16px 0}
-  .t-det-h{font-weight:700;font-size:13px;text-transform:uppercase;margin:18px 0 8px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+  .r-track{height:20px;background:var(--soft);border-radius:10px;overflow:hidden}
+  .r-bar{height:100%;width:0;border-radius:10px;transition:width 1s cubic-bezier(.2,.7,.2,1)}
+  .r-val{font-weight:900;font-size:17px;text-align:right;font-variant-numeric:tabular-nums}
+  .r-n{grid-column:2 / 4;font-size:11px;color:var(--muted);margin-top:-7px}
+  @media (max-width:600px){ .r-row{grid-template-columns:100px 1fr 44px} }
+  .dot{width:10px;height:10px;border-radius:50%;flex:none;display:inline-block}
+  .share{background:var(--accent-soft);padding:14px;margin:18px 0;text-align:center}
+  .share p{font-weight:700;font-size:14px;margin-bottom:10px}
+  .share-b{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+  .share-b a,.share-b button{display:inline-flex;align-items:center;gap:6px;color:#fff;text-decoration:none;font-size:13px;font-weight:700;padding:9px 14px;border:0}
+  .share-b svg{width:16px;height:16px;fill:#fff}
+  .sh-wa{background:#1f9e55}.sh-x{background:#111}.sh-fb{background:#1b5fc4}.sh-cp{background:#555}
+  .t-warn{border-left:3px solid var(--accent);background:#fafafa;padding:10px 12px;font-size:12.5px;line-height:1.5;margin:14px 0}
   details{border-bottom:1px solid var(--line)}
-  summary{list-style:none;cursor:pointer;padding:10px 0;font-size:14px;line-height:1.35;display:flex;gap:8px;align-items:flex-start}
+  summary{list-style:none;cursor:pointer;padding:11px 0;display:grid;grid-template-columns:34px 1fr;gap:10px;align-items:start}
   summary::-webkit-details-marker{display:none}
-  summary::before{content:"▸";color:var(--accent);flex:none}
-  details[open] summary::before{content:"▾"}
-  .you{display:inline-block;font-size:11px;font-weight:700;padding:2px 6px;background:var(--soft);margin-left:4px;white-space:nowrap}
-  .pos{display:grid;grid-template-columns:18px 104px 1fr;gap:6px;font-size:12.5px;line-height:1.4;padding:5px 0 5px 16px}
-  .pos b{font-weight:700}
+  .sm-ic{width:34px;height:34px;border-radius:50%;background:var(--accent-soft);display:grid;place-items:center}
+  .sm-ic svg{width:18px;height:18px;stroke:var(--accent)}
+  .sm-q{font-size:14px;line-height:1.35}
+  .sm-row{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;align-items:center}
+  .you{font-size:11px;font-weight:700;padding:2px 7px;background:#333;color:#fff;border-radius:999px;margin-right:4px}
+  .mini{font-size:10.5px;font-weight:700;color:#fff;padding:2px 7px;border-radius:999px;display:inline-flex;gap:3px;align-items:center}
+  .mini.zero{background:#fff !important;color:#999;border:1px dashed #ccc}
+  .more{font-size:11px;color:var(--accent);margin-left:auto;white-space:nowrap}
+  details[open] .more{visibility:hidden}
+  .pos{display:grid;grid-template-columns:18px 108px 1fr;gap:6px;font-size:12.5px;line-height:1.4;padding:5px 0 5px 44px}
   .ico{font-weight:900;text-align:center}
   .ico.p{color:#2a8647}.ico.n{color:#c62828}.ico.z{color:#999}
   .pos small{color:var(--muted)}
-  .t-foot{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:8px 20px;background:var(--soft);border-top:1px solid var(--line);font-size:11px;color:var(--muted)}
+  .again{background:none;border:1px solid var(--line);font-weight:500;font-size:13px;padding:9px 14px;margin-top:16px}
+  .t-foot{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:8px 24px;background:var(--soft);border-top:1px solid var(--line);font-size:11px;color:var(--muted)}
   .t-foot b{color:var(--accent)}
-  .hidden{display:none !important}
   @media (max-width:600px){
     .pos{grid-template-columns:18px 1fr;padding-left:4px}
     .pos > span:last-child{grid-column:2}
@@ -256,22 +290,65 @@ const ANS = [
 const ansLabel = v => v===null||v===undefined ? "Sin responder" : ANS.find(a=>a.v===v).l;
 
 /* ============================================================
+   ICONOS (dibujo propio, trazo simple)
+   ============================================================ */
+const SVG = (d) => `<svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
+const ICON = {
+  "Vivienda":      SVG('<path d="M3 11l9-7 9 7"/><path d="M5 10v10h5v-6h4v6h5V10"/>'),
+  "Trabajo":       SVG('<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5h6v2M3 13h18"/>'),
+  "Impuestos":     SVG('<circle cx="12" cy="12" r="9"/><path d="M15.5 8.5a4.5 4.5 0 1 0 0 7M7 11h6M7 13.5h6"/>'),
+  "Energía":       SVG('<path d="M13 2L4 14h7l-1 8 9-12h-7z"/>'),
+  "Inmigración":   SVG('<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3.2 3 3.2 15 0 18M12 3c-3.2 3-3.2 15 0 18"/>'),
+  "Política":      SVG('<path d="M3 21h18M4 10h16M12 3l8 5H4z"/><path d="M6 10v8M10 10v8M14 10v8M18 10v8"/>'),
+  "Derechos":      SVG('<path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/>'),
+  "Sanidad":       SVG('<path d="M9 3h6v6h6v6h-6v6H9v-6H3V9h6z"/>'),
+  "Democracia":    SVG('<rect x="4" y="11" width="16" height="10" rx="1"/><path d="M9 11l1-7h4l1 7M9 16h6"/>'),
+  "Medio ambiente":SVG('<path d="M5 19c0-9 6-14 15-14 0 9-5 15-14 15z"/><path d="M5 19l8-8"/>')
+};
+const BALLOT = `<svg class="hero-art" viewBox="0 0 220 200" aria-hidden="true">
+  <ellipse cx="110" cy="186" rx="86" ry="8" fill="#e9efe9"/>
+  <rect x="40" y="88" width="140" height="94" rx="6" fill="#2a8647"/>
+  <rect x="40" y="88" width="140" height="18" fill="#195136"/>
+  <rect x="78" y="94" width="64" height="6" rx="3" fill="#0f3a25"/>
+  <g transform="rotate(-8 110 60)"><rect x="80" y="22" width="60" height="78" rx="3" fill="#fff" stroke="#d6dcd6" stroke-width="2"/>
+  <path d="M92 40h36M92 52h28M92 64h32" stroke="#c9d3c9" stroke-width="4" stroke-linecap="round"/>
+  <path d="M95 78l8 8 16-18" stroke="#2a8647" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></g>
+  <text x="110" y="150" text-anchor="middle" font-family="Roboto,Arial" font-weight="900" font-size="26" fill="#fff">29-N</text>
+</svg>`;
+const SCALE = [
+  { v: 2, l:"Muy de acuerdo",    col:"#2a8647", sz:44 },
+  { v: 1, l:"De acuerdo",        col:"#6fb585", sz:34 },
+  { v: 0, l:"Neutral",           col:"#a8a8a8", sz:26 },
+  { v:-1, l:"En desacuerdo",     col:"#e07a7a", sz:34 },
+  { v:-2, l:"Muy en desacuerdo", col:"#c62828", sz:44 }
+];
+const PAGE_URL = "https://www.cantabriapress.com/test-elecciones-29n/";
+
+/* ============================================================
    ESTADO Y PANTALLAS
    ============================================================ */
 const app = document.getElementById("app");
 let i = 0, answers = new Array(Q.length).fill(null);
-
+const P = id => PARTIES.find(p=>p.id===id);
 const head = (r) => `<div class="t-head"><span class="t-tag">Cantabria · 29-N</span><span class="t-head-r">${r||""}</span></div>`;
 const foot = `<div class="t-foot"><span><b>CantabriaPress</b> · Test elaborado con los programas publicados</span><span>Actualizado: 17 nov 2026</span></div>`;
 
 function start(){
+  const topics = [...new Set(Q.map(q=>q.topic))];
   app.innerHTML = head("Test electoral") + `
-  <div class="t-pad">
-    <h1 class="t-title">¿Con qué partido coincides?</h1>
-    <p class="t-lead">Responde a ${Q.length} afirmaciones sobre vivienda, impuestos, trabajo, energía y otros temas de la campaña. Al final verás con qué partido coinciden más tus respuestas, y en qué se basa cada posición.</p>
-    <div class="t-parties">${PARTIES.map(p=>`<span><i class="dot" style="background:${p.c}"></i>${p.n}</span>`).join("")}</div>
-    <button class="btn" id="go">Empezar el test</button>
-    <p class="t-note">Las posiciones de cada partido salen de sus programas y propuestas publicadas, con la fuente enlazada en cada caso. No es una recomendación de voto. Incluimos los partidos que se presentan en Cantabria y tienen propuestas públicas suficientes para comparar; Frente Obrero y PCTE no se incluyen por falta de propuestas documentadas.</p>
+  <div class="t-pad fade">
+    <div class="hero">
+      <div>
+        <h1>¿Con qué partido <em>coincides</em>?</h1>
+        <p>Responde a ${Q.length} afirmaciones de la campaña y descubre qué partido se parece más a lo que piensas. Al final verás en qué se basa cada posición.</p>
+        <div class="facts"><div><b>${Q.length}</b>preguntas</div><div><b>3 min</b>aprox.</div><div><b>${PARTIES.length}</b>partidos</div></div>
+        <div class="chips">${PARTIES.map(p=>`<span class="chip" style="background:${p.c}">${p.n}</span>`).join("")}</div>
+        <button class="btn" id="go">Empezar el test →</button>
+      </div>
+      ${BALLOT}
+    </div>
+    <div class="topics">${topics.map(t=>`<span>${ICON[t]}${t}</span>`).join("")}</div>
+    <p class="t-note">Las posiciones de cada partido salen de sus programas y propuestas publicadas, con la fuente enlazada en cada caso. No es una recomendación de voto. Incluimos los partidos que se presentan en Cantabria con propuestas públicas suficientes para comparar; Frente Obrero y PCTE no se incluyen por falta de propuestas documentadas.</p>
   </div>` + foot;
   document.getElementById("go").onclick = () => { i = 0; question(); };
   sendHeight();
@@ -279,18 +356,28 @@ function start(){
 
 function question(){
   const q = Q[i];
-  app.innerHTML = head(`${i+1} de ${Q.length}`) + `
-  <div class="t-prog"><i style="width:${(i/Q.length)*100}%"></i></div>
-  <div class="t-pad">
-    <div class="t-meta"><span class="t-topic">${q.topic}</span><span>Pregunta ${i+1}/${Q.length}</span></div>
-    <p class="t-q">${q.q}</p>
-    <div class="t-ans">${ANS.map(a=>`<button data-v="${a.v}" class="${answers[i]===a.v?'sel':''}">${a.l}</button>`).join("")}</div>
-    <div class="t-nav">
-      <button class="t-link" id="back" ${i===0?'style="visibility:hidden"':''}>← Anterior</button>
-      <button class="t-link" id="skip">Saltar pregunta →</button>
+  app.innerHTML = head(`Pregunta ${i+1} de ${Q.length}`) + `
+  <div class="steps">${Q.map((_,k)=>`<i class="${k<i?'done':k===i?'now':''}"></i>`).join("")}</div>
+  <div class="qcard fade">
+    <div class="qicon">${ICON[q.topic]||""}</div>
+    <div class="qtopic">${q.topic}</div>
+    <p class="qtext">${q.q}</p>
+    <div class="scale">
+      <span class="end l">De acuerdo</span>
+      ${SCALE.map(a=>`<button class="opt ${answers[i]===a.v?'sel':''}" data-v="${a.v}" style="--col:${a.col}" aria-label="${a.l}">
+        <span class="c" style="width:${a.sz}px;height:${a.sz}px;margin-top:${(44-a.sz)/2}px"></span><small>${a.l}</small></button>`).join("")}
+      <span class="end r">En desacuerdo</span>
     </div>
+  </div>
+  <div class="qnav">
+    <button class="t-link" id="back" ${i===0?'style="visibility:hidden"':''}>← Anterior</button>
+    <button class="t-link" id="skip">Saltar →</button>
   </div>` + foot;
-  app.querySelectorAll(".t-ans button").forEach(b => b.onclick = () => { answers[i] = +b.dataset.v; next(); });
+  app.querySelectorAll(".opt").forEach(b => b.onclick = () => {
+    answers[i] = +b.dataset.v;
+    app.querySelectorAll(".opt").forEach(x=>x.classList.toggle("sel", x===b));
+    setTimeout(next, 220);
+  });
   document.getElementById("skip").onclick = () => { answers[i] = null; next(); };
   document.getElementById("back").onclick = () => { if(i>0){ i--; question(); } };
   sendHeight();
@@ -310,49 +397,81 @@ function score(){
   }).sort((a,b)=>(b.pct??-1)-(a.pct??-1));
 }
 
+const ansLabel2 = v => v===null ? "Sin responder" : SCALE.find(a=>a.v===v).l;
+
 function results(){
   const r = score();
   const answered = answers.filter(a=>a!==null).length;
+  const top = r.filter(x=>x.pct!==null && x.pct===r[0].pct);
   const icon = p => p===1?'<span class="ico p">✓</span>':p===-1?'<span class="ico n">✗</span>':'<span class="ico z">–</span>';
   const word = p => p===1?"A favor":p===-1?"En contra":"Sin propuesta";
   const src = s => s ? ` <small>· <a href="${S[s].u}" target="_blank" rel="noopener">${S[s].t}</a></small>` : "";
+  const shareText = top.length ? `He hecho el test del 29-N de CantabriaPress y coincido un ${top[0].pct}% con ${top.map(t=>t.n).join(" y ")}. ¿Y tú?` : "Haz el test del 29-N de CantabriaPress: ¿con qué partido coincides?";
+  const enc = encodeURIComponent;
 
+  const winBg = top.length===1 ? top[0].c : (top.length>1 ? `linear-gradient(90deg, ${top.map(t=>t.c).join(",")})` : "#555");
   app.innerHTML = head("Tus resultados") + `
-  <div class="t-prog"><i style="width:100%"></i></div>
+  ${answered===0 ? `<div class="t-pad"><p>No has respondido ninguna pregunta, así que no podemos calcular coincidencias.</p><button class="again" id="again">Volver a empezar</button></div>` : `
+  <div class="win fade" style="background:${winBg}">
+    <small>Coincides más con</small>
+    <div class="wn">${top.map(t=>t.n).join(" y ")}</div>
+    <div class="wp">${top[0].pct}<span>%</span></div>
+    <div class="wsub">Has respondido ${answered} de ${Q.length} preguntas</div>
+  </div>
   <div class="t-pad">
-    <h2 class="t-res-h">Tus resultados</h2>
-    <p class="t-res-sub">Has respondido ${answered} de ${Q.length} preguntas. El porcentaje indica cuánto coinciden tus respuestas con las posiciones de cada partido.</p>
-    ${answered===0 ? `<p class="t-res-sub">No has respondido ninguna pregunta, así que no podemos calcular coincidencias.</p>` :
-      r.map(p=>`
+    <div class="r-h">Todos los partidos</div>
+    ${r.map(p=>`
       <div class="r-row">
         <div class="r-name"><i class="dot" style="background:${p.c}"></i>${p.n}</div>
         <div class="r-track"><div class="r-bar" data-w="${p.pct??0}" style="background:${p.c}"></div></div>
         <div class="r-val">${p.pct===null?"–":p.pct+"%"}</div>
         <div class="r-n">Comparado en ${p.cnt} ${p.cnt===1?"pregunta":"preguntas"}</div>
       </div>`).join("")}
-    <div class="t-warn">Esto <b>no es una recomendación de voto</b>. Solo compara tus respuestas con lo que cada partido propone en estos ${Q.length} temas. Cuando un partido no tiene una propuesta sobre un tema, esa pregunta no cuenta para él; por eso cada partido se compara en un número distinto de preguntas.</div>
-    <div class="t-det-h">Pregunta a pregunta</div>
+    <div class="share">
+      <p>Comparte tu resultado</p>
+      <div class="share-b">
+        <a class="sh-wa" href="https://wa.me/?text=${enc(shareText+" "+PAGE_URL)}" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.3 14.2c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.5-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.9s.7-2 1-2.3c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.3 0 .5l-.3.5-.4.4c-.1.1-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.3 2.4 1.5.3.1.5.1.6-.1l.9-1c.2-.3.4-.2.6-.1l1.9.9c.3.1.5.2.5.3.1.1.1.6-.1 1.1z"/></svg>WhatsApp</a>
+        <a class="sh-x" href="https://twitter.com/intent/tweet?text=${enc(shareText)}&url=${enc(PAGE_URL)}" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M17.8 3h3.1l-6.8 7.7L22 21h-6.2l-4.9-6.4L5.3 21H2.2l7.3-8.3L2 3h6.4l4.4 5.8zm-1.1 16.2h1.7L7.4 4.7H5.6z"/></svg>X</a>
+        <a class="sh-fb" href="https://www.facebook.com/sharer/sharer.php?u=${enc(PAGE_URL)}" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M14 8V6c0-.8.2-1.3 1.4-1.3H17V1.2C16.7 1.1 15.6 1 14.4 1 11.9 1 10.2 2.5 10.2 5.3V8H7.5v3.9h2.7V23H14V11.9h2.8l.4-3.9z"/></svg>Facebook</a>
+        <button class="sh-cp" id="copy">Copiar enlace</button>
+      </div>
+    </div>
+    <div class="t-warn">Esto <b>no es una recomendación de voto</b>. Solo compara tus respuestas con lo que propone cada partido en estos ${Q.length} temas. Si un partido no tiene propuesta sobre un tema, esa pregunta no cuenta para él; por eso cada partido se compara en un número distinto de preguntas.</div>
+    <div class="r-h" style="margin-top:18px">Pregunta a pregunta</div>
     ${Q.map((q,k)=>`
       <details>
-        <summary><span>${q.q} <span class="you">Tú: ${ansLabel(answers[k])}</span></span></summary>
+        <summary>
+          <span class="sm-ic">${ICON[q.topic]||""}</span>
+          <span>
+            <span class="sm-q">${q.q}</span>
+            <span class="sm-row"><span class="you">Tú: ${ansLabel2(answers[k])}</span>
+              ${PARTIES.map(p=>{const x=q.pos[p.id].p; return `<span class="mini ${x===0?'zero':''}" style="background:${p.c}">${x===1?'✓':x===-1?'✗':'–'} ${p.n}</span>`;}).join("")}
+              <span class="more">Ver por qué ▾</span></span>
+          </span>
+        </summary>
         ${PARTIES.map(p=>{ const x=q.pos[p.id]; return `
           <div class="pos">${icon(x.p)}<b><i class="dot" style="background:${p.c}"></i> ${p.n}</b><span><b>${word(x.p)}.</b> ${x.t}${src(x.s)}</span></div>`; }).join("")}
       </details>`).join("")}
-    <div class="t-nav" style="margin-top:16px">
-      <button class="btn-ghost" id="again">Repetir el test</button>
-    </div>
+    <button class="again" id="again">↺ Repetir el test</button>
     <p class="t-note">Posiciones recogidas el 17 de noviembre de 2026 de los programas electorales y propuestas publicadas. Algunas posiciones de Frente Amplio y Podemos proceden de documentos y votaciones anteriores porque sus programas completos no estaban disponibles; se indica en cada fuente.</p>
-  </div>` + foot;
+  </div>`}` + foot;
+
   document.getElementById("again").onclick = () => { answers = new Array(Q.length).fill(null); start(); };
+  const cp = document.getElementById("copy");
+  if (cp) cp.onclick = async () => {
+    try { await navigator.clipboard.writeText(shareText+" "+PAGE_URL); cp.textContent = "¡Copiado!"; }
+    catch(e){ cp.textContent = PAGE_URL; }
+    sendHeight();
+  };
   app.querySelectorAll("details").forEach(d=>d.addEventListener("toggle", sendHeight));
-  requestAnimationFrame(()=>app.querySelectorAll(".r-bar").forEach(b=>b.style.width=b.dataset.w+"%"));
+  setTimeout(()=>app.querySelectorAll(".r-bar").forEach(b=>b.style.width=b.dataset.w+"%"),80);
   sendHeight();
-  try { app.scrollIntoView({block:"start"}); parent.postMessage({cpTestTop:true},"*"); } catch(e){}
+  try { parent.postMessage({cpTestTop:true},"*"); } catch(e){}
 }
 
 /* Altura para el iframe */
 function sendHeight(){
-  setTimeout(()=>{ try{ parent.postMessage({cpTestAltura: Math.ceil(app.getBoundingClientRect().height)+2}, "*"); }catch(e){} }, 30);
+  setTimeout(()=>{ try{ parent.postMessage({cpTestAltura: Math.ceil(app.getBoundingClientRect().height)+2}, "*"); }catch(e){} }, 40);
 }
 window.addEventListener("resize", sendHeight);
 window.addEventListener("load", sendHeight);
