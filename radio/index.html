@@ -6,59 +6,66 @@
 <title>Cantabria FM en directo</title>
 <style>
   :root{
-    --bg:#ffffff; --fg:#14181f; --muted:#5b6472; --line:#e3e6eb;
-    --accent:#e30000; --accent-fg:#ffffff; --web:#2a8647; --web-dark:#195136; --track:#e3e6eb;
+    --verde:#2a8647; --verde-osc:#123d27; --verde-cla:#3aa35e;
+    --blanco:#ffffff; --suave:rgba(255,255,255,.82); --rojo:#e30000;
   }
   *{box-sizing:border-box;margin:0;padding:0}
-  html,body{background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
-  .player{display:flex;align-items:center;gap:14px;padding:12px 16px;border:1px solid var(--line);border-radius:12px;min-height:76px}
-  .play{flex:none;width:52px;height:52px;border-radius:50%;border:0;background:var(--web);color:var(--accent-fg);cursor:pointer;display:grid;place-items:center;transition:transform .15s}
-  .play:hover{transform:scale(1.05);background:var(--web-dark)}
-  .play:focus-visible{outline:3px solid var(--fg);outline-offset:2px}
-  .play:disabled{opacity:.45;cursor:not-allowed;transform:none}
+  html,body{background:var(--verde-osc);color:var(--blanco);font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+  .player{position:relative;overflow:hidden;display:flex;align-items:center;gap:14px;padding:12px 16px;border-radius:12px;min-height:76px;
+    background:
+      repeating-radial-gradient(circle at 100% 50%, rgba(255,255,255,.07) 0 2px, transparent 2px 26px),
+      radial-gradient(ellipse at 15% 0%, rgba(255,255,255,.16), transparent 55%),
+      linear-gradient(100deg, var(--verde-osc) 0%, var(--verde) 55%, var(--verde-cla) 100%)}
+  .player::after{content:"";position:absolute;left:0;right:0;bottom:0;height:1px;background:rgba(255,255,255,.18)}
+  .player > *{position:relative;z-index:1}
+  .play{flex:none;width:52px;height:52px;border-radius:50%;border:0;background:var(--blanco);color:var(--verde);cursor:pointer;display:grid;place-items:center;transition:transform .15s,box-shadow .15s;box-shadow:0 2px 8px rgba(0,0,0,.25)}
+  .play:hover{transform:scale(1.06);box-shadow:0 0 0 5px rgba(255,255,255,.18),0 2px 8px rgba(0,0,0,.25)}
+  .play:focus-visible{outline:3px solid var(--blanco);outline-offset:3px}
+  .play:disabled{opacity:.55;cursor:not-allowed;transform:none}
   .play svg{width:22px;height:22px;fill:currentColor}
   .info{flex:1;min-width:0}
-  .top{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-  .logo{flex:none;height:44px;width:auto;display:block}
-  .name{font-weight:900;font-size:18px;white-space:nowrap;text-transform:uppercase;letter-spacing:.01em}
-  .name .fm{color:var(--accent)}
-  .live{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;letter-spacing:.06em;color:var(--accent);text-transform:uppercase}
-  .dot{width:8px;height:8px;border-radius:50%;background:var(--accent)}
+  .top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .logo{flex:none;height:44px;width:auto;display:block;filter:drop-shadow(0 1px 2px rgba(0,0,0,.25))}
+  .name{font-weight:900;font-size:18px;white-space:nowrap;text-transform:uppercase;letter-spacing:.02em;text-shadow:0 1px 2px rgba(0,0,0,.25)}
+  .name .esc{font-weight:500;opacity:.9}
+  .live{display:inline-flex;align-items:center;gap:6px;font-size:10.5px;font-weight:800;letter-spacing:.08em;color:var(--blanco);text-transform:uppercase;background:var(--rojo);padding:3px 8px 3px 7px;border-radius:999px;box-shadow:0 1px 3px rgba(0,0,0,.25)}
+  .dot{width:7px;height:7px;border-radius:50%;background:var(--blanco)}
   .playing .dot{animation:pulse 1.4s infinite}
-  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(227,0,0,.55)}70%{box-shadow:0 0 0 8px rgba(227,0,0,0)}100%{box-shadow:0 0 0 0 rgba(227,0,0,0)}}
-  .status{font-size:13px;color:var(--muted);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(255,255,255,.7)}70%{box-shadow:0 0 0 6px rgba(255,255,255,0)}100%{box-shadow:0 0 0 0 rgba(255,255,255,0)}}
+  .status{font-size:13px;color:var(--suave);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .bars{display:none;gap:2px;align-items:flex-end;height:14px}
   .playing .bars{display:inline-flex}
-  .bars i{width:3px;background:var(--accent);border-radius:1px;animation:eq 1s infinite ease-in-out}
+  .bars i{width:3px;background:var(--blanco);border-radius:1px;animation:eq 1s infinite ease-in-out}
   .bars i:nth-child(2){animation-delay:.2s}.bars i:nth-child(3){animation-delay:.4s}.bars i:nth-child(4){animation-delay:.1s}
   @keyframes eq{0%,100%{height:4px}50%{height:14px}}
   .vol{flex:none;display:flex;align-items:center;gap:8px}
-  .mute{border:0;background:none;color:var(--muted);cursor:pointer;display:grid;place-items:center;width:32px;height:32px;border-radius:6px}
-  .mute:focus-visible{outline:2px solid var(--fg)}
+  .mute,.pop{flex:none;border:0;background:none;color:var(--suave);cursor:pointer;place-items:center;width:32px;height:32px;border-radius:6px}
+  .mute{display:grid}
+  .mute:hover,.pop:hover{color:var(--blanco);background:rgba(255,255,255,.12)}
+  .mute:focus-visible,.pop:focus-visible{outline:2px solid var(--blanco)}
   .mute svg{width:20px;height:20px;fill:currentColor}
-  input[type=range]{width:90px;accent-color:var(--web)}
+  input[type=range]{width:90px;accent-color:var(--blanco)}
   @media (max-width:420px){ input[type=range]{display:none} .name{font-size:15px} .name .esc{display:none} }
   /* Modo cabecera: barra fina (?modo=cabecera) */
-  .cabecera .player{border:0;border-bottom:3px solid var(--web);border-radius:0;min-height:48px;padding:6px 16px;gap:10px}
+  .cabecera .player{border-radius:0;min-height:51px;padding:6px 16px;gap:10px}
   .cabecera .play{width:36px;height:36px}
   .cabecera .play svg{width:16px;height:16px}
   .cabecera .info{display:flex;align-items:center;gap:12px}
   .cabecera .name{font-size:16px}
-  .cabecera .logo{height:34px}
+  .cabecera .logo{height:36px}
   .cabecera .status{margin-top:0}
-  .pop{flex:none;border:0;background:none;color:var(--muted);cursor:pointer;width:32px;height:32px;border-radius:6px;display:none;place-items:center}
+  .pop{display:none}
   .pop svg{width:18px;height:18px;fill:currentColor}
-  .pop:focus-visible{outline:2px solid var(--fg)}
   .con-ventana .pop{display:grid}
   .cabecera .top{flex-wrap:nowrap}
   @media (max-width:760px){ .cabecera .status{display:none} }
-  @media (max-width:440px){ .cabecera .live-t{display:none} .cabecera .logo{height:30px} .cabecera .player{padding:6px 10px} }
+  @media (max-width:440px){ .cabecera .live-t{display:none} .cabecera .live{padding:5px} .cabecera .logo{height:32px} .cabecera .player{padding:6px 10px} }
   @media (prefers-reduced-motion:reduce){ .playing .dot,.bars i{animation:none} .bars i{height:10px} }
 </style>
 </head>
 <body>
 <div class="player" id="player">
-  <img class="logo" src="logo-color.png" alt="Cantabria FM">
+  <img class="logo" src="logo-blanco.png" alt="Cantabria FM">
   <button class="play" id="play" aria-label="Escuchar en directo">
     <svg id="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
   </button>
@@ -88,8 +95,8 @@ const CONFIG = {
   eslogan: "Pulsa para escuchar la radio en directo",
   // URL directa del stream (https). Admite .mp3, .aac, Icecast/Shoutcast y .m3u8 (HLS).
   stream: "",
-  color: "#e30000",         // rojo Cantabria FM (FM y "en directo")
-  colorWeb: "#2a8647"       // verde CantabriaPress (botón, volumen y línea inferior)
+  color: "#e30000",         // rojo Cantabria FM (etiqueta "en directo")
+  colorWeb: "#2a8647"       // verde CantabriaPress (fondo de la barra)
 };
 /* ============================================== */
 
@@ -103,8 +110,8 @@ const ICON_PAUSE = '<path d="M6 5h4v14H6zm8 0h4v14h-4z"/>';
 const VOL_ON = "M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 8v8a4.5 4.5 0 0 0 2.5-4z";
 const VOL_OFF = "M3 9v6h4l5 5V4L7 9H3zm13.6 3 2.7-2.7-1.4-1.4-2.7 2.7-2.7-2.7-1.4 1.4 2.7 2.7-2.7 2.7 1.4 1.4 2.7-2.7 2.7 2.7 1.4-1.4z";
 
-document.documentElement.style.setProperty("--accent", CONFIG.color);
-document.documentElement.style.setProperty("--web", CONFIG.colorWeb);
+document.documentElement.style.setProperty("--verde", CONFIG.colorWeb);
+document.documentElement.style.setProperty("--rojo", CONFIG.color);
 
 // Modo: ?modo=cabecera (barra fina para la cabecera) · ?modo=ventana (ventana emergente)
 const modo = new URLSearchParams(location.search).get("modo");
