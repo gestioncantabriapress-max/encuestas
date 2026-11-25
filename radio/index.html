@@ -9,12 +9,6 @@
     --bg:#ffffff; --fg:#14181f; --muted:#5b6472; --line:#e3e6eb;
     --accent:#e30000; --accent-fg:#ffffff; --track:#e3e6eb;
   }
-  @media (prefers-color-scheme: dark){
-    :root:not([data-theme="light"]){
-      --bg:#14181f; --fg:#f2f4f7; --muted:#a3acb9; --line:#2a313c; --track:#2a313c;
-    }
-  }
-  :root[data-theme="dark"]{ --bg:#14181f; --fg:#f2f4f7; --muted:#a3acb9; --line:#2a313c; --track:#2a313c; }
   *{box-sizing:border-box;margin:0;padding:0}
   html,body{background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
   .player{display:flex;align-items:center;gap:14px;padding:12px 16px;border:1px solid var(--line);border-radius:12px;min-height:76px}
@@ -26,12 +20,9 @@
   .info{flex:1;min-width:0}
   .top{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
   .logo{flex:none;height:44px;width:auto;display:block}
-  .logo-dark{display:none}
-  @media (prefers-color-scheme: dark){ .logo-light{display:none} .logo-dark{display:block} }
   .name{font-weight:900;font-size:18px;white-space:nowrap;text-transform:uppercase;letter-spacing:.01em}
   .name .fm{color:var(--accent)}
   .live{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;letter-spacing:.06em;color:var(--accent);text-transform:uppercase}
-  @media (prefers-color-scheme: dark){ .live,.name .fm{color:#ff4d4d} }
   .dot{width:8px;height:8px;border-radius:50%;background:var(--accent)}
   .playing .dot{animation:pulse 1.4s infinite}
   @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(227,0,0,.55)}70%{box-shadow:0 0 0 8px rgba(227,0,0,0)}100%{box-shadow:0 0 0 0 rgba(227,0,0,0)}}
@@ -67,8 +58,7 @@
 </head>
 <body>
 <div class="player" id="player">
-  <img class="logo logo-light" src="logo-color.png" alt="Cantabria FM">
-  <img class="logo logo-dark" src="logo-white.png" alt="Cantabria FM">
+  <img class="logo" src="logo-color.png" alt="Cantabria FM">
   <button class="play" id="play" aria-label="Escuchar en directo">
     <svg id="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
   </button>
