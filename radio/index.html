@@ -7,13 +7,13 @@
 <style>
   :root{
     --bg:#ffffff; --fg:#14181f; --muted:#5b6472; --line:#e3e6eb;
-    --accent:#e30000; --accent-fg:#ffffff; --track:#e3e6eb;
+    --accent:#e30000; --accent-fg:#ffffff; --web:#2a8647; --web-dark:#195136; --track:#e3e6eb;
   }
   *{box-sizing:border-box;margin:0;padding:0}
   html,body{background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
   .player{display:flex;align-items:center;gap:14px;padding:12px 16px;border:1px solid var(--line);border-radius:12px;min-height:76px}
-  .play{flex:none;width:52px;height:52px;border-radius:50%;border:0;background:var(--accent);color:var(--accent-fg);cursor:pointer;display:grid;place-items:center;transition:transform .15s}
-  .play:hover{transform:scale(1.05)}
+  .play{flex:none;width:52px;height:52px;border-radius:50%;border:0;background:var(--web);color:var(--accent-fg);cursor:pointer;display:grid;place-items:center;transition:transform .15s}
+  .play:hover{transform:scale(1.05);background:var(--web-dark)}
   .play:focus-visible{outline:3px solid var(--fg);outline-offset:2px}
   .play:disabled{opacity:.45;cursor:not-allowed;transform:none}
   .play svg{width:22px;height:22px;fill:currentColor}
@@ -36,10 +36,10 @@
   .mute{border:0;background:none;color:var(--muted);cursor:pointer;display:grid;place-items:center;width:32px;height:32px;border-radius:6px}
   .mute:focus-visible{outline:2px solid var(--fg)}
   .mute svg{width:20px;height:20px;fill:currentColor}
-  input[type=range]{width:90px;accent-color:var(--accent)}
+  input[type=range]{width:90px;accent-color:var(--web)}
   @media (max-width:420px){ input[type=range]{display:none} .name{font-size:15px} .name .esc{display:none} }
   /* Modo cabecera: barra fina (?modo=cabecera) */
-  .cabecera .player{border:0;border-bottom:1px solid var(--line);border-radius:0;min-height:48px;padding:6px 16px;gap:10px}
+  .cabecera .player{border:0;border-bottom:3px solid var(--web);border-radius:0;min-height:48px;padding:6px 16px;gap:10px}
   .cabecera .play{width:36px;height:36px}
   .cabecera .play svg{width:16px;height:16px}
   .cabecera .info{display:flex;align-items:center;gap:12px}
@@ -88,7 +88,8 @@ const CONFIG = {
   eslogan: "Pulsa para escuchar la radio en directo",
   // URL directa del stream (https). Admite .mp3, .aac, Icecast/Shoutcast y .m3u8 (HLS).
   stream: "",
-  color: "#e30000"          // rojo Cantabria FM
+  color: "#e30000",         // rojo Cantabria FM (FM y "en directo")
+  colorWeb: "#2a8647"       // verde CantabriaPress (botón, volumen y línea inferior)
 };
 /* ============================================== */
 
@@ -103,6 +104,7 @@ const VOL_ON = "M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 8v8a4.5 4.5 0 0 0 
 const VOL_OFF = "M3 9v6h4l5 5V4L7 9H3zm13.6 3 2.7-2.7-1.4-1.4-2.7 2.7-2.7-2.7-1.4 1.4 2.7 2.7-2.7 2.7 1.4 1.4 2.7-2.7 2.7 2.7 1.4-1.4z";
 
 document.documentElement.style.setProperty("--accent", CONFIG.color);
+document.documentElement.style.setProperty("--web", CONFIG.colorWeb);
 
 // Modo: ?modo=cabecera (barra fina para la cabecera) · ?modo=ventana (ventana emergente)
 const modo = new URLSearchParams(location.search).get("modo");

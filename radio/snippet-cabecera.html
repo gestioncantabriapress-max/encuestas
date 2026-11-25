@@ -2,10 +2,10 @@
      Se oculta al bajar por la página y vuelve a aparecer al subir.
      Pégalo justo después de <body> en la plantilla (o en un bloque "HTML personalizado" de cabecera). -->
 <style>
-  #cfm-radio{position:fixed;top:0;left:0;right:0;z-index:99999;height:49px;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.08);transition:transform .25s ease}
+  #cfm-radio{position:fixed;top:0;left:0;right:0;z-index:99999;height:51px;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.08);transition:transform .25s ease}
   #cfm-radio.cfm-oculta{transform:translateY(-110%)}
-  #cfm-radio iframe{display:block;width:100%;height:49px;border:0}
-  body{padding-top:49px !important}            /* deja hueco para que la barra no tape la web */
+  #cfm-radio iframe{display:block;width:100%;height:51px;border:0}
+  body{padding-top:51px !important}            /* deja hueco para que la barra no tape la web */
   body.admin-bar #cfm-radio{top:32px}          /* WordPress con sesión iniciada */
   @media (max-width:782px){ body.admin-bar #cfm-radio{top:46px} }
   @media (prefers-reduced-motion:reduce){ #cfm-radio{transition:none} }
