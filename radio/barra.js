@@ -10,7 +10,8 @@
   var MOVIL = 782;   // por debajo de este ancho (px) la barra va abajo
   var CAPA = 9000;   // por debajo de los avisos de cookies (suelen usar 9900 o más) para no taparlos
   var ORIGEN = "https://gestioncantabriapress-max.github.io";
-  var URL = ORIGEN + "/encuestas/radio/?modo=cabecera";
+  var VERSION = "6";   // súbelo al cambiar el reproductor para que los navegadores no usen la versión guardada
+  var URL = ORIGEN + "/encuestas/radio/?modo=cabecera&v=" + VERSION;
 
   /* ---------- Dentro del marco de escucha continua ---------- */
   if (window.top !== window) {
