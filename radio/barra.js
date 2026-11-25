@@ -11,7 +11,7 @@
   var CAPA = 9000;
   var ESPERA = 6000;  // móvil: milisegundos hasta que la barra se recoge sola   // por debajo de los avisos de cookies (suelen usar 9900 o más) para no taparlos
   var ORIGEN = "https://gestioncantabriapress-max.github.io";
-  var VERSION = "7";   // súbelo al cambiar el reproductor para que los navegadores no usen la versión guardada
+  var VERSION = "8";   // súbelo al cambiar el reproductor para que los navegadores no usen la versión guardada
   var URL = ORIGEN + "/encuestas/radio/?modo=cabecera&v=" + VERSION;
 
   /* ---------- Dentro del marco de escucha continua ---------- */
@@ -59,19 +59,11 @@
         "#cfm-radio.cfm-oculta{transform:none}" +
         "body{padding-top:0 !important;padding-bottom:" + ALTO + "px !important}" +
         "#cfm-web{top:0;bottom:auto;height:calc(100% - " + ALTO + "px - env(safe-area-inset-bottom))}" +
-        /* Recogida: la barra baja y queda una pestaña redonda para volver a abrirla */
+        /* Recogida: la barra baja fuera de la pantalla; vuelve al subir */
         "html.cfm-mini #cfm-radio{transform:translateY(110%) !important}" +
         "html.cfm-mini body{padding-bottom:0 !important}" +
         "html.cfm-mini #cfm-web{height:100%}" +
-        "#cfm-pestana{position:fixed;right:14px;bottom:calc(14px + env(safe-area-inset-bottom));z-index:" + CAPA + ";width:54px;height:54px;border-radius:50%;border:0;padding:0;cursor:pointer;" +
-          "background:linear-gradient(135deg,#123d27,#2a8647 60%,#3aa35e);box-shadow:0 3px 10px rgba(0,0,0,.3);display:grid;place-items:center;" +
-          "transform:scale(0);transition:transform .2s ease}" +
-        "html.cfm-mini #cfm-pestana{transform:scale(1)}" +
-        "#cfm-pestana img{width:34px;height:auto;display:block}" +
-        "#cfm-pestana i{position:absolute;top:3px;right:3px;width:12px;height:12px;border-radius:50%;background:#e30000;border:2px solid #fff;display:none}" +
-        "#cfm-pestana.cfm-suena i{display:block}" +
-      "}" +
-      "@media (min-width:" + (MOVIL + 1) + "px){#cfm-pestana{display:none}}";
+      "}";
     document.head.appendChild(css);
 
     var barra = document.createElement("div");
@@ -83,14 +75,7 @@
     barra.appendChild(f);
     document.body.insertBefore(barra, document.body.firstChild);
 
-    var pestana = document.createElement("button");
-    pestana.id = "cfm-pestana";
-    pestana.type = "button";
-    pestana.setAttribute("aria-label", "Mostrar la radio Cantabria FM");
-    pestana.innerHTML = '<img src="' + ORIGEN + '/encuestas/radio/logo-blanco.png" alt=""><i></i>';
-    document.body.appendChild(pestana);
-
-    /* Móvil: la barra se recoge sola a los pocos segundos */
+    /* Móvil: la barra se recoge sola a los pocos segundos y vuelve al subir */
     var esMovil = window.matchMedia("(max-width:" + MOVIL + "px)");
     var html = document.documentElement, reloj = null;
     function recoger() { if (esMovil.matches) html.classList.add("cfm-mini"); }
@@ -98,23 +83,27 @@
       html.classList.remove("cfm-mini");
       clearTimeout(reloj); reloj = setTimeout(recoger, ESPERA);
     }
-    pestana.addEventListener("click", mostrar);
     mostrar();
 
-    /* Ocultar al bajar / mostrar al subir (solo en modo normal) */
-    var ultima = window.scrollY, pendiente = false;
-    window.addEventListener("scroll", function () {
-      if (pendiente || window.__cfmContinuo) return; pendiente = true;
-      requestAnimationFrame(function () {
-        var y = window.scrollY, d = y - ultima;
-        if (esMovil.matches) {
-          if (d > 6) { clearTimeout(reloj); recoger(); }
-        } else if (y < 60) barra.classList.remove("cfm-oculta");
-        else if (d > 6) barra.classList.add("cfm-oculta");
-        else if (d < -6) barra.classList.remove("cfm-oculta");
-        ultima = y; pendiente = false;
-      });
-    }, { passive: true });
+    /* Al bajar se oculta, al subir reaparece (en la página o dentro del marco de escucha continua) */
+    var ultima = 0, pendiente = false;
+    function seguir(ventana) {
+      ultima = ventana.scrollY;
+      ventana.addEventListener("scroll", function () {
+        if (pendiente) return; pendiente = true;
+        requestAnimationFrame(function () {
+          var y = ventana.scrollY, d = y - ultima;
+          if (esMovil.matches) {
+            if (d > 6) { clearTimeout(reloj); recoger(); }
+            else if (d < -6 || y < 60) mostrar();
+          } else if (y < 60 || window.__cfmContinuo) barra.classList.remove("cfm-oculta");
+          else if (d > 6) barra.classList.add("cfm-oculta");
+          else if (d < -6) barra.classList.remove("cfm-oculta");
+          ultima = y; pendiente = false;
+        });
+      }, { passive: true });
+    }
+    seguir(window);
 
     /* ¿Está sonando? Lo avisa el reproductor */
     var sonando = false;
@@ -122,20 +111,20 @@
       if (e.origin !== ORIGEN || !e.data || !e.data.cfm) return;
       if (e.data.cfm === "toque") { mostrar(); return; }   // el lector está usando la barra
       sonando = e.data.cfm === "sonando";
-      pestana.classList.toggle("cfm-suena", sonando);
     });
 
     function modoContinuo(destino) {
       window.__cfmContinuo = true;
       // Quita el contenido de la página actual, dejando la barra (que sigue sonando)
       Array.prototype.slice.call(document.body.childNodes).forEach(function (n) {
-        if (n !== barra && n !== pestana) document.body.removeChild(n);
+        if (n !== barra) document.body.removeChild(n);
       });
       document.documentElement.classList.add("cfm-continuo");
       var web = document.createElement("iframe");
       web.id = "cfm-web";
       web.title = document.title;
       web.src = destino;
+      web.addEventListener("load", function () { try { seguir(web.contentWindow); } catch (e) {} });
       document.body.appendChild(web);
       history.pushState(null, "", destino);
       // "Atrás" hasta la página donde se empezó a escuchar: mostrarla en el marco
