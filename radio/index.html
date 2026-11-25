@@ -150,17 +150,21 @@ async function start(){
   }catch(e){ stop(); setStatus("No se ha podido conectar. Inténtalo de nuevo."); }
 }
 
+// Avisa a la web que contiene la barra (barra.js) de si la radio está sonando
+function aviso(estado){ try{ if (window.parent !== window) window.parent.postMessage({cfm: estado}, "*"); }catch(e){} }
+
 function stop(){
   audio.pause();
   if (hls){ hls.destroy(); hls = null; }
   audio.removeAttribute("src"); audio.load();   // corta la descarga: al volver, se reanuda en directo
   setUI(false);
+  aviso("parada");
 }
 
 $("play").addEventListener("click", () => {
   if (playing){ stop(); setStatus(CONFIG.eslogan); } else start();
 });
-audio.addEventListener("playing", () => { setUI(true); setStatus("Sonando en directo"); });
+audio.addEventListener("playing", () => { setUI(true); setStatus("Sonando en directo"); aviso("sonando"); });
 audio.addEventListener("waiting", () => { if (playing) setStatus("Cargando…"); });
 audio.addEventListener("error", () => { if (audio.getAttribute("src")){ stop(); setStatus("Emisión no disponible en este momento"); } });
 
