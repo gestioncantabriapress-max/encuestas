@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Resultados 29-N y pactómetro · CantabriaPress</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  /* Mismo estilo que el banner de encuestas (tema Newspaper con el verde de CantabriaPress) */
+  :root{
+    --ink:#111111; --muted:#767676; --line:#ededed; --bg:#ffffff; --soft:#f7f7f7;
+    --accent:#2a8647; --accent-dark:#195136; --accent-soft:#f2f8f4;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:Roboto,Verdana,Geneva,sans-serif;color:var(--ink);background:transparent}
+  .cp-banner{background:var(--bg);border:1px solid var(--line)}
+  .cp-head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;border-bottom:2px solid var(--accent);flex-wrap:wrap;padding-right:14px}
+  .cp-kicker{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .cp-tag{background:var(--accent);color:#fff;font-weight:500;font-size:14px;line-height:1;text-transform:uppercase;padding:9px 14px 8px;white-space:nowrap}
+  .cp-title{font-weight:700;font-size:20px;line-height:1.2;padding:8px 0}
+  .cp-count{font-size:13px;color:var(--muted);padding:8px 0}
+  .cp-count b{color:var(--accent);font-weight:900}
+  .prueba{background:#fff3cd;color:#7a5a00;font-size:12px;font-weight:700;text-align:center;padding:5px 10px;border-bottom:1px solid #f0d98c;letter-spacing:.03em}
+
+  .cp-body{display:grid;grid-template-columns:1fr 1.25fr 1.25fr}
+  .cp-col{padding:14px 18px;min-width:0}
+  .cp-col + .cp-col{border-left:1px solid var(--line)}
+  .cp-col.cant{background:var(--accent-soft)}
+  .cp-h{font-size:12px;font-weight:700;text-transform:uppercase;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+  .cp-h::before{content:"";display:inline-block;width:3px;height:11px;background:var(--accent);margin-right:6px;vertical-align:-1px}
+  .dot{width:9px;height:9px;border-radius:50%;flex:none;display:inline-block}
+
+  /* Cantabria */
+  .cant-seats{display:flex;gap:8px;justify-content:center;margin:8px 0 10px}
+  .cseat{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;color:#fff;font-size:11px;font-weight:700;box-shadow:0 1px 2px rgba(0,0,0,.15)}
+  .row{display:grid;grid-template-columns:108px 1fr 46px;align-items:center;gap:8px;margin:6px 0}
+  .pname{font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;white-space:nowrap;overflow:hidden}
+  .track{height:12px;background:#fff;overflow:hidden}
+  .bar{height:100%}
+  .val{font-size:13px;font-weight:700;text-align:right;font-variant-numeric:tabular-nums}
+  .dato{display:flex;justify-content:space-between;font-size:12.5px;padding:6px 0;border-top:1px solid var(--line);margin-top:8px}
+  .dato b{font-variant-numeric:tabular-nums}
+
+  /* España */
+  .hemi{display:block;width:100%;max-width:280px;margin:0 auto}
+  .tabla{width:100%;border-collapse:collapse;font-size:13px;margin-top:6px}
+  .tabla td{padding:4px 0;border-bottom:1px solid var(--line)}
+  .tabla td.n{text-align:right;font-weight:700;font-variant-numeric:tabular-nums;width:40px}
+  .tabla td.d{text-align:right;font-size:11.5px;color:var(--muted);width:42px;font-variant-numeric:tabular-nums}
+  .sube{color:#1f7a3a !important}.baja{color:#c0392b !important}
+
+  /* Pactómetro */
+  .pact-txt{font-size:12.5px;color:var(--muted);margin-bottom:8px}
+  .chips{display:flex;flex-wrap:wrap;gap:6px}
+  .chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:#fff;border-radius:999px;padding:6px 10px 6px 8px;font:500 13px Roboto,sans-serif;cursor:pointer;color:var(--ink)}
+  .chip b{font-variant-numeric:tabular-nums}
+  .chip[aria-pressed="true"]{border-color:transparent;color:#fff;background:var(--c)}
+  .chip[aria-pressed="true"] .dot{background:#fff !important}
+  .chip:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  .medidor{position:relative;height:22px;background:var(--soft);margin:14px 0 6px;display:flex;overflow:hidden}
+  .medidor span{height:100%;transition:width .3s}
+  .marca{position:absolute;top:-4px;bottom:-4px;width:2px;background:#111}
+  .marca-t{position:relative;font-size:11px;color:var(--muted);height:14px}
+  .marca-t span{position:absolute;transform:translateX(-50%);white-space:nowrap}
+  .suma{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-top:6px}
+  .suma .num{font-size:30px;font-weight:900;font-variant-numeric:tabular-nums}
+  .suma .num small{font-size:14px;font-weight:500;color:var(--muted)}
+  .veredicto{font-size:13px;font-weight:700;text-align:right}
+  .veredicto.si{color:var(--accent)}
+  .limpiar{margin-top:10px;background:none;border:0;color:var(--muted);font:500 12px Roboto,sans-serif;text-decoration:underline;cursor:pointer}
+
+  .src{font-size:11px;color:var(--muted);line-height:1.45;margin-top:8px}
+  .cp-foot{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:8px 18px;background:var(--soft);border-top:1px solid var(--line);font-size:11px;color:var(--muted)}
+  .cp-foot b{color:var(--accent)}
+
+  .cp-tabs{display:none}
+  @media (max-width:900px){
+    .cp-body{grid-template-columns:1fr 1fr}
+    .cp-col.pact{grid-column:1 / -1;border-left:0;border-top:1px solid var(--line)}
+  }
+  @media (max-width:760px){
+    .cp-head{flex-wrap:nowrap;align-items:center;padding-right:10px}
+    .cp-title{display:none}
+    .cp-tag{font-size:13px;padding:9px 12px 8px}
+    .cp-count{font-size:12px;padding:0;text-align:right}
+    .cp-tabs{display:flex;border-bottom:1px solid var(--line)}
+    .cp-tabs button{flex:1;background:none;border:0;border-bottom:3px solid transparent;padding:9px 0 7px;font:700 13px Roboto,sans-serif;text-transform:uppercase;color:var(--muted);cursor:pointer}
+    .cp-tabs button.on{color:var(--accent);border-bottom-color:var(--accent)}
+    .cp-body{grid-template-columns:1fr}
+    .cp-col + .cp-col{border-left:0}
+    .cp-col.pact{border-top:0}
+    .cp-banner[data-tab="cantabria"] .t-es,.cp-banner[data-tab="cantabria"] .t-pa,
+    .cp-banner[data-tab="espana"] .t-ca,.cp-banner[data-tab="espana"] .t-pa,
+    .cp-banner[data-tab="pacto"] .t-ca,.cp-banner[data-tab="pacto"] .t-es{display:none}
+    .cp-col{padding:12px 14px}
+    .m-hide{display:none !important}
+  }
+</style>
+</head>
+<body>
+
+<div class="cp-banner" id="cp-banner"></div>
+
+<script>
+/* ============================================================
+   DATOS — lo único que se cambia la noche del 29-N
+   ⚠ AHORA SON DATOS DE PRUEBA (cifras inventadas). Poner prueba:false con los reales.
+   ============================================================ */
+const DATA = {
+  prueba: true,
+  escrutado: 100,                       // % escrutado
+  actualizado: "29 nov 2026, 23:59",
+  espana: {
+    total: 350, mayoria: 176,
+    participacion: 70.0, participacion23: 66.6,
+    // En orden para el hemiciclo (de izquierda a derecha). s23 = escaños en 2023 (opcional)
+    partidos: [
+      { n: "Frente Amplio", s: 20,  s23: null, c: "#e4366e" },
+      { n: "PSOE",          s: 110, s23: 121,  c: "#e30613" },
+      { n: "ERC",           s: 7,   s23: 7,    c: "#f2b10c" },
+      { n: "Bildu",         s: 6,   s23: 6,    c: "#1aa6a6" },
+      { n: "PNV",           s: 5,   s23: 5,    c: "#2e8b57" },
+      { n: "Junts",         s: 7,   s23: 7,    c: "#00c3b2" },
+      { n: "Otros",         s: 4,   s23: null, c: "#c9cdd3" },
+      { n: "PP",            s: 135, s23: 137,  c: "#1d84ce" },
+      { n: "Vox",           s: 56,  s23: 33,   c: "#5ac035" }
+    ]
+  },
+  cantabria: {
+    participacion: 71.0, participacion23: 69.9,
+    partidos: [   // v = % de voto; s = diputados (suman 5)
+      { n: "PP",            v: 40.0, s: 2, c: "#1d84ce" },
+      { n: "PSOE",          v: 30.0, s: 2, c: "#e30613" },
+      { n: "Vox",           v: 18.0, s: 1, c: "#5ac035" },
+      { n: "Frente Amplio", v: 6.0,  s: 0, c: "#e4366e" }
+    ]
+  },
+  fuente: "Ministerio del Interior, resultados provisionales."
+};
+
+/* ============================================================
+   LÓGICA
+   ============================================================ */
+const el = document.getElementById("cp-banner");
+const fmt = n => n.toLocaleString("es-ES",{minimumFractionDigits:1,maximumFractionDigits:1});
+const E = DATA.espana, C = DATA.cantabria;
+
+function hemicycle(p, total){
+  const rows = 10, R0 = 40, R1 = 120, cx = 130, cy = 128;
+  const radii = Array.from({length:rows},(_,i)=>R0+(R1-R0)*i/(rows-1));
+  const sumR = radii.reduce((a,b)=>a+b,0);
+  let counts = radii.map(r=>Math.round(total*r/sumR));
+  counts[rows-1] += total - counts.reduce((a,b)=>a+b,0);
+  const pts = [];
+  radii.forEach((r,i)=>{ const k = counts[i];
+    for(let j=0;j<k;j++){ const a = Math.PI - Math.PI*(j/(k-1||1)); pts.push({a, x: cx + r*Math.cos(a), y: cy - r*Math.sin(a)}); } });
+  pts.sort((p1,p2)=>p2.a-p1.a);
+  const colors = []; p.forEach(x=>{for(let i=0;i<x.s;i++)colors.push(x.c)});
+  while(colors.length<total)colors.push("#d6d9de");
+  const dots = pts.map((q,i)=>`<circle cx="${q.x.toFixed(1)}" cy="${q.y.toFixed(1)}" r="3.6" fill="${colors[i]}"/>`).join("");
+  return `<svg class="hemi" viewBox="0 0 260 136" role="img" aria-label="Reparto de escaños del Congreso">${dots}
+    <line x1="130" y1="2" x2="130" y2="18" stroke="#16181d" stroke-width="1.2" stroke-dasharray="2 2"/></svg>`;
+}
+
+function render(){
+  const porEsc = [...E.partidos].filter(x=>x.n!=="Otros").sort((a,b)=>b.s-a.s);
+  const otros = E.partidos.find(x=>x.n==="Otros");
+  const dif = x => x.s23==null ? "" : (x.s-x.s23>0 ? `<span class="sube">+${x.s-x.s23}</span>` : x.s-x.s23<0 ? `<span class="baja">${x.s-x.s23}</span>` : "=");
+  const filas = porEsc.concat(otros?[otros]:[]).map(x=>`<tr><td><span class="dot" style="background:${x.c}"></span> ${x.n}</td><td class="n">${x.s}</td><td class="d">${dif(x)}</td></tr>`).join("");
+
+  const maxC = Math.max(...C.partidos.map(x=>x.v));
+  const cseats = C.partidos.flatMap(x=>Array(x.s).fill(x)).map(x=>`<span class="cseat" style="background:${x.c}">${x.n.length>5?x.n.split(" ").map(w=>w[0]).join(""):x.n}</span>`).join("");
+  const cbars = C.partidos.map(x=>`<div class="row"><div class="pname"><span class="dot" style="background:${x.c}"></span>${x.n}</div><div class="track"><div class="bar" style="width:${x.v/maxC*92}%;background:${x.c}"></div></div><div class="val">${fmt(x.v)}%</div></div>`).join("");
+
+  const chips = porEsc.map(x=>`<button type="button" class="chip" aria-pressed="false" data-n="${x.n}" style="--c:${x.c}"><span class="dot" style="background:${x.c}"></span>${x.n} <b>${x.s}</b></button>`).join("");
+  const marcaPct = E.mayoria / E.total * 100;
+
+  el.innerHTML = `
+    <div class="cp-head">
+      <div class="cp-kicker"><span class="cp-tag">Cantabria · 29-N</span><span class="cp-title">Resultados de las elecciones generales</span></div>
+      <div class="cp-count">Escrutado: <b>${fmt(DATA.escrutado)}%</b></div>
+    </div>
+    ${DATA.prueba ? '<div class="prueba">DATOS DE PRUEBA · NO SON RESULTADOS REALES</div>' : ''}
+    <div class="cp-tabs" role="tablist">
+      <button data-t="cantabria" class="on" role="tab">Cantabria</button>
+      <button data-t="espana" role="tab">España</button>
+      <button data-t="pacto" role="tab">Pactómetro</button>
+    </div>
+    <div class="cp-body">
+      <div class="cp-col cant t-ca">
+        <div class="cp-h">Cantabria · los 5 diputados</div>
+        <div class="cant-seats">${cseats}</div>
+        ${cbars}
+        <div class="dato"><span>Participación</span><b>${fmt(C.participacion)}% <span class="m-hide" style="font-weight:400;color:var(--muted)">(2023: ${fmt(C.participacion23)}%)</span></b></div>
+      </div>
+      <div class="cp-col t-es">
+        <div class="cp-h">España · Congreso</div>
+        ${hemicycle(E.partidos, E.total)}
+        <table class="tabla">${filas}</table>
+        <div class="dato"><span>Participación</span><b>${fmt(E.participacion)}% <span style="font-weight:400;color:var(--muted)">(2023: ${fmt(E.participacion23)}%)</span></b></div>
+      </div>
+      <div class="cp-col pact t-pa">
+        <div class="cp-h">Pactómetro · ¿quién suma ${E.mayoria}?</div>
+        <p class="pact-txt">Toca los partidos para sumar sus escaños y ver si llegan a la mayoría absoluta.</p>
+        <div class="chips">${chips}</div>
+        <div class="medidor" id="medidor"><i class="marca" style="left:${marcaPct}%"></i></div>
+        <div class="marca-t"><span style="left:${marcaPct}%">${E.mayoria}</span></div>
+        <div class="suma"><div class="num" id="suma">0 <small>escaños</small></div><div class="veredicto" id="veredicto">Elige partidos</div></div>
+        <button class="limpiar" id="limpiar" type="button">Empezar de nuevo</button>
+      </div>
+    </div>
+    <div class="cp-foot"><span><b>CantabriaPress</b> · ${DATA.actualizado}</span><span>Fuente: ${DATA.fuente}</span></div>`;
+
+  // pestañas (móvil)
+  el.dataset.tab = "cantabria";
+  el.querySelectorAll(".cp-tabs button").forEach(b=>b.addEventListener("click",()=>{
+    el.dataset.tab = b.dataset.t;
+    el.querySelectorAll(".cp-tabs button").forEach(x=>x.classList.toggle("on", x===b));
+    sendHeight();
+  }));
+
+  // pactómetro
+  const elegidos = new Set();
+  const medidor = el.querySelector("#medidor");
+  function actualizar(){
+    const sel = porEsc.filter(x=>elegidos.has(x.n));
+    const total = sel.reduce((a,b)=>a+b.s,0);
+    medidor.querySelectorAll("span").forEach(s=>s.remove());
+    sel.forEach(x=>{ const s=document.createElement("span"); s.style.width=(x.s/E.total*100)+"%"; s.style.background=x.c; medidor.appendChild(s); });
+    el.querySelector("#suma").innerHTML = `${total} <small>escaños</small>`;
+    const v = el.querySelector("#veredicto");
+    if (!sel.length){ v.textContent = "Elige partidos"; v.className = "veredicto"; }
+    else if (total >= E.mayoria){ v.textContent = "✓ Mayoría absoluta"; v.className = "veredicto si"; }
+    else { v.textContent = `Faltan ${E.mayoria - total}`; v.className = "veredicto"; }
+  }
+  el.querySelectorAll(".chip").forEach(b=>b.addEventListener("click",()=>{
+    const on = !elegidos.has(b.dataset.n);
+    on ? elegidos.add(b.dataset.n) : elegidos.delete(b.dataset.n);
+    b.setAttribute("aria-pressed", on);
+    actualizar();
+  }));
+  el.querySelector("#limpiar").addEventListener("click",()=>{
+    elegidos.clear(); el.querySelectorAll(".chip").forEach(b=>b.setAttribute("aria-pressed","false")); actualizar();
+  });
+}
+render();
+
+/* Avisa a la página que lo contiene de la altura (mismo aviso que el banner de encuestas) */
+function sendHeight(){ try{ parent.postMessage({cpEncuestasAltura: Math.ceil(document.getElementById("cp-banner").getBoundingClientRect().height) + 2}, "*"); }catch(e){} }
+window.addEventListener("load", sendHeight);
+window.addEventListener("resize", sendHeight);
+setTimeout(sendHeight, 600); setTimeout(sendHeight, 1500);
+</script>
+</body>
+</html>
