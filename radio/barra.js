@@ -8,6 +8,7 @@
 (function () {
   var ALTO = 51;
   var MOVIL = 782;   // por debajo de este ancho (px) la barra va abajo
+  var CAPA = 9000;   // por debajo de los avisos de cookies (suelen usar 9900 o más) para no taparlos
   var ORIGEN = "https://gestioncantabriapress-max.github.io";
   var URL = ORIGEN + "/encuestas/radio/?modo=cabecera";
 
@@ -39,7 +40,7 @@
   function montar() {
     var css = document.createElement("style");
     css.textContent =
-      "#cfm-radio{position:fixed;top:0;left:0;right:0;z-index:99999;height:" + ALTO + "px;background:#2a8647;box-shadow:0 2px 6px rgba(0,0,0,.18);transition:transform .25s ease}" +
+      "#cfm-radio{position:fixed;top:0;left:0;right:0;z-index:" + CAPA + ";height:" + ALTO + "px;background:#2a8647;box-shadow:0 2px 6px rgba(0,0,0,.18);transition:transform .25s ease}" +
       "#cfm-radio.cfm-oculta{transform:translateY(-110%)}" +
       "#cfm-radio iframe{display:block;width:100%;height:" + ALTO + "px;border:0}" +
       "body{padding-top:" + ALTO + "px !important}" +
