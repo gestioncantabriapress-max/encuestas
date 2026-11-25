@@ -202,6 +202,8 @@ function ponerMetadatos(){
   navigator.mediaSession.playbackState = playing ? "playing" : "paused";
 }
 audio.addEventListener("playing", ponerMetadatos);
+// Si el lector toca la barra, la web no la recoge mientras la usa
+document.addEventListener("pointerdown", () => aviso("toque"));
 audio.addEventListener("pause", ponerMetadatos);
 
 if ("mediaSession" in navigator){
