@@ -4,6 +4,7 @@
 (function () {
   if (document.getElementById("cfm-radio")) return;
   var ALTO = 51;
+  var MOVIL = 782;   // por debajo de este ancho (px) la barra va abajo
   var URL = "https://gestioncantabriapress-max.github.io/encuestas/radio/?modo=cabecera";
 
   function montar() {
@@ -15,7 +16,13 @@
       "body{padding-top:" + ALTO + "px !important}" +
       "body.admin-bar #cfm-radio{top:32px}" +
       "@media (max-width:782px){body.admin-bar #cfm-radio{top:46px}}" +
-      "@media (prefers-reduced-motion:reduce){#cfm-radio{transition:none}}";
+      "@media (prefers-reduced-motion:reduce){#cfm-radio{transition:none}}" +
+      /* Móvil: barra fija abajo, siempre visible, para no chocar con el menú del tema */
+      "@media (max-width:" + MOVIL + "px){" +
+        "#cfm-radio,body.admin-bar #cfm-radio{top:auto;bottom:0;box-shadow:0 -2px 6px rgba(0,0,0,.18);padding-bottom:env(safe-area-inset-bottom);height:auto}" +
+        "#cfm-radio.cfm-oculta{transform:none}" +
+        "body{padding-top:0 !important;padding-bottom:" + ALTO + "px !important}" +
+      "}";
     document.head.appendChild(css);
 
     var barra = document.createElement("div");
