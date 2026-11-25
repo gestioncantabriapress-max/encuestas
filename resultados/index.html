@@ -52,6 +52,17 @@
   .pc .n{font-size:12.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .pc .num{font-size:30px;font-weight:900;line-height:1.05}
   .pc .d{font-size:11.5px;font-weight:700;color:var(--suave)}
+  .pc .ant{font-size:11px;color:var(--suave);margin-top:2px}
+  .anio{display:inline-flex;background:var(--tenue);border-radius:999px;padding:3px;gap:2px}
+  .anio button{border:0;background:none;color:var(--suave);font:900 11px Roboto,sans-serif;letter-spacing:.06em;padding:5px 10px;border-radius:999px;cursor:pointer}
+  .anio button.on{background:var(--blanco);color:var(--fondo)}
+  .anio button:focus-visible{outline:2px solid #fff;outline-offset:1px}
+  .barra{position:relative;overflow:visible !important}
+  .barra > div{border-radius:99px}
+  .barra .ant23{position:absolute;top:-3px;bottom:-3px;width:3px;margin-left:-1px;background:#fff;border-radius:2px;box-shadow:0 0 0 1px rgba(0,0,0,.35)}
+  .fila .cmp{font-size:11.5px;color:var(--suave);margin-top:4px}
+  .ley{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:11.5px;color:var(--suave);margin-top:10px}
+  .ley i{display:inline-block;width:3px;height:12px;background:#fff;border-radius:2px}
   .sube{color:#7be29c !important}.baja{color:#ff8a8a !important}
 
   /* Cantabria */
@@ -141,15 +152,33 @@ const DATA = {
       { n: "Otros",         s: 4,   s23: null, c: "#c9cdd3" },
       { n: "PP",            s: 135, s23: 137,  c: "#1d84ce" },
       { n: "Vox",           s: 56,  s23: 33,   c: "#5ac035" }
-    ]
+    ],
+    // Congreso en las generales del 23-J de 2023 (resultado oficial), para comparar
+    anterior: {
+      titulo: "23-J 2023",
+      partidos: [
+        { n: "Sumar", s: 31,  c: "#e4366e" },
+        { n: "PSOE",  s: 121, c: "#e30613" },
+        { n: "ERC",   s: 7,   c: "#f2b10c" },
+        { n: "Bildu", s: 6,   c: "#1aa6a6" },
+        { n: "PNV",   s: 5,   c: "#2e8b57" },
+        { n: "BNG",   s: 1,   c: "#76b4e0" },
+        { n: "Junts", s: 7,   c: "#00c3b2" },
+        { n: "CC",    s: 1,   c: "#ffd200" },
+        { n: "UPN",   s: 1,   c: "#1f4e9a" },
+        { n: "PP",    s: 137, c: "#1d84ce" },
+        { n: "Vox",   s: 33,  c: "#5ac035" }
+      ]
+    }
   },
   cantabria: {
     participacion: 71.0, participacion23: 69.9,
-    partidos: [   // v = % de voto; s = diputados (suman 5)
-      { n: "PP",            v: 40.0, s: 2, c: "#1d84ce" },
-      { n: "PSOE",          v: 30.0, s: 2, c: "#e30613" },
-      { n: "Vox",           v: 18.0, s: 1, c: "#5ac035" },
-      { n: "Frente Amplio", v: 6.0,  s: 0, c: "#e4366e" }
+    // v = % de voto; s = diputados (suman 5); v23/s23 = 2023 (null si el partido no se presentaba)
+    partidos: [
+      { n: "PP",            v: 40.0, s: 2, v23: 42.1, s23: 2, c: "#1d84ce" },
+      { n: "PSOE",          v: 30.0, s: 2, v23: 33.3, s23: 2, c: "#e30613" },
+      { n: "Vox",           v: 18.0, s: 1, v23: 14.1, s23: 1, c: "#5ac035" },
+      { n: "Frente Amplio", v: 6.0,  s: 0, v23: null, s23: null, c: "#e4366e" }
     ]
   },
   fuente: "Ministerio del Interior, resultados provisionales."
@@ -196,11 +225,20 @@ function render(){
   const porEsc = [...E.partidos].filter(x=>x.n!=="Otros").sort((a,b)=>b.s-a.s);
   const otros = E.partidos.find(x=>x.n==="Otros");
   const dif = x => x.s23==null ? "&nbsp;" : (x.s-x.s23>0 ? `<span class="sube">▲ ${x.s-x.s23}</span>` : x.s-x.s23<0 ? `<span class="baja">▼ ${x.s23-x.s}</span>` : "= 2023");
-  const tarjetas = porEsc.concat(otros?[otros]:[]).map(x=>`<div class="pc" style="--c:${x.c}"><div class="n">${x.n}</div><div class="num" data-num="${x.s}">0</div><div class="d">${dif(x)}</div></div>`).join("");
+  const tarjetasDe = (lista, actual) => lista.map(x=>`<div class="pc" style="--c:${x.c}"><div class="n">${x.n}</div><div class="num" data-num="${x.s}">0</div>${actual ? `<div class="d">${dif(x)}</div><div class="ant">${x.s23==null ? "No estaba en 2023" : "2023: " + x.s23}</div>` : ""}</div>`).join("");
+  const tarjetas = tarjetasDe(porEsc.concat(otros?[otros]:[]), true);
+  const ant = E.anterior;
+  const tarjetas23 = ant ? tarjetasDe([...ant.partidos].sort((a,b)=>b.s-a.s), false) : "";
 
   const maxC = Math.max(...C.partidos.map(x=>x.v));
   const cseats = C.partidos.flatMap(x=>Array(x.s).fill(x)).map((x,i)=>`<span class="cseat" style="background:${x.c};animation-delay:${300+i*120}ms">${sigla(x.n)}</span>`).join("");
-  const cfilas = C.partidos.map(x=>`<div class="fila"><div class="top"><span><i style="background:${x.c}"></i>${x.n}${x.s?` · ${x.s} ${x.s===1?"escaño":"escaños"}`:""}</span><b class="num" data-num="${x.v}" data-dec="1" data-suf="%">0</b></div><div class="barra"><div data-w="${x.v/maxC*100}" style="background:${x.c}"></div></div></div>`).join("");
+  const maxB = Math.max(maxC, ...C.partidos.map(x=>x.v23||0));
+  const esc = n => n + " " + (n===1 ? "escaño" : "escaños");
+  const cfilas = C.partidos.map(x=>{
+    const cmp = x.v23==null ? "No se presentaba en 2023"
+      : `2023: ${fmt(x.v23)}%${x.s23!=null ? " · " + esc(x.s23) : ""} <b class="${x.v>=x.v23?"sube":"baja"}">(${x.v>=x.v23?"+":"−"}${fmt(Math.abs(x.v-x.v23))} puntos)</b>`;
+    return `<div class="fila"><div class="top"><span><i style="background:${x.c}"></i>${x.n}${x.s?` · ${esc(x.s)}`:""}</span><b class="num" data-num="${x.v}" data-dec="1" data-suf="%">0</b></div><div class="barra"><div data-w="${x.v/maxB*100}" style="background:${x.c}"></div>${x.v23!=null?`<span class="ant23" style="left:${x.v23/maxB*100}%" title="2023: ${fmt(x.v23)}%"></span>`:""}</div><div class="cmp">${cmp}</div></div>`;
+  }).join("");
 
   const chips = porEsc.map(x=>`<button type="button" class="chip" aria-pressed="false" data-n="${x.n}" style="--c:${x.c}"><i></i>${x.n} <b>${x.s}</b></button>`).join("");
   const marcaPct = E.mayoria / E.total * 100;
@@ -218,14 +256,16 @@ function render(){
     </div>
     <div class="cuerpo">
       <div class="card t-es">
-        <div class="tit"><span>España · <b>Congreso</b></span><span>Participación <b>${fmt(E.participacion)}%</b></span></div>
-        <div class="hemi-w">${hemicycle(E.partidos, E.total)}<div class="hemi-c"><div class="num">${E.mayoria}</div><small>Mayoría absoluta</small></div></div>
-        <div class="partidos">${tarjetas}</div>
+        <div class="tit"><span>España · <b>Congreso</b></span>${ant ? `<span class="anio" role="group" aria-label="Elegir elecciones"><button type="button" class="on" data-a="2026">29-N 2026</button><button type="button" data-a="2023">${ant.titulo}</button></span>` : ""}</div>
+        <div class="hemi-w"><div id="hemi">${hemicycle(E.partidos, E.total)}</div><div class="hemi-c"><div class="num">${E.mayoria}</div><small>Mayoría absoluta</small></div></div>
+        <div class="partidos" id="tarj">${tarjetas}</div>
+        <div class="ley">Participación: <b style="color:#fff">${fmt(E.participacion)}%</b> · en 2023: ${fmt(E.participacion23)}%</div>
       </div>
       <div class="card cant t-ca">
         <div class="tit"><span>Cantabria · <b>5 diputados</b></span></div>
         <div class="seats">${cseats}</div>
         ${cfilas}
+        <div class="ley"><i></i> La marca blanca es el resultado de 2023</div>
         <div class="part"><span>Participación en Cantabria<br><small>2023: ${fmt(C.participacion23)}%</small></span><span class="num" data-num="${C.participacion}" data-dec="1" data-suf="%">0</span></div>
       </div>
     </div>
@@ -241,6 +281,15 @@ function render(){
 
   contar(el);
   requestAnimationFrame(()=>setTimeout(()=>el.querySelectorAll(".barra div").forEach(b=>b.style.width=b.dataset.w+"%"),50));
+
+  // 2026 / 2023 en el Congreso
+  el.querySelectorAll(".anio button").forEach(b=>b.addEventListener("click",()=>{
+    const es23 = b.dataset.a === "2023";
+    el.querySelectorAll(".anio button").forEach(x=>x.classList.toggle("on", x===b));
+    el.querySelector("#hemi").innerHTML = hemicycle(es23 ? ant.partidos : E.partidos, E.total);
+    const tj = el.querySelector("#tarj"); tj.innerHTML = es23 ? tarjetas23 : tarjetas; contar(tj);
+    sendHeight();
+  }));
 
   // pestañas (móvil)
   el.dataset.tab = "cantabria";
