@@ -91,7 +91,8 @@
     /* Móvil: la barra se recoge sola a los pocos segundos y vuelve al subir */
     var esMovil = window.matchMedia("(max-width:" + MOVIL + "px)");
     var html = document.documentElement, reloj = null;
-    function recoger() { if (esMovil.matches) html.classList.add("cfm-mini"); }
+    var abierto = false;   // lista de podcasts desplegada
+    function recoger() { if (esMovil.matches && !abierto) html.classList.add("cfm-mini"); }
     function mostrar() {
       html.classList.remove("cfm-mini");
       clearTimeout(reloj); reloj = setTimeout(recoger, ESPERA);
@@ -123,6 +124,14 @@
     window.addEventListener("message", function (e) {
       if (e.origin !== ORIGEN || !e.data || !e.data.cfm) return;
       if (e.data.cfm === "toque") { mostrar(); return; }   // el lector está usando la barra
+      if (e.data.cfm === "alto") {                          // se abre o cierra la lista de podcasts
+        var alto = Math.max(ALTO, Math.min(+e.data.alto || ALTO, window.innerHeight - 60));
+        abierto = alto > ALTO;
+        barra.style.height = alto + "px";
+        if (barra.firstChild) barra.firstChild.style.height = alto + "px";
+        barra.classList.remove("cfm-oculta"); mostrar();
+        return;
+      }
       sonando = e.data.cfm === "sonando";
     });
 

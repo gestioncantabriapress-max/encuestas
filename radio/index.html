@@ -66,10 +66,51 @@
   }
   @media (max-width:760px){ .cabecera .status{display:none} }
   @media (max-width:440px){ .cabecera .live-t{display:none} .cabecera .live{padding:5px} .cabecera .logo{height:32px} .cabecera .player{padding:6px 10px} }
+  /* ---------- Podcasts ---------- */
+  .wrap{display:flex;flex-direction:column}
+  .pod{flex:none;display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 12px 0 10px;border-radius:999px;border:1px solid rgba(255,255,255,.45);background:rgba(255,255,255,.08);color:var(--blanco);font:600 13px/1 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;cursor:pointer;white-space:nowrap}
+  .pod:hover,.pod[aria-expanded="true"]{background:rgba(255,255,255,.2);border-color:var(--blanco)}
+  .pod:focus-visible{outline:2px solid var(--blanco);outline-offset:2px}
+  .pod svg{width:16px;height:16px;fill:currentColor;flex:none}
+  .pod .flecha{width:12px;height:12px;transition:transform .2s}
+  .pod[aria-expanded="true"] .flecha{transform:rotate(180deg)}
+  .volver{display:none;align-items:center;gap:6px;border:0;cursor:pointer;font:800 10.5px/1 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:var(--blanco);background:var(--rojo);padding:5px 9px 5px 8px;border-radius:999px;white-space:nowrap}
+  .volver:focus-visible{outline:2px solid var(--blanco);outline-offset:2px}
+  .es-podcast .live{display:none}
+  .es-podcast .volver{display:inline-flex}
+  .panel{background:#0e3220;color:var(--blanco);border-top:1px solid rgba(255,255,255,.15)}
+  .panel[hidden]{display:none}
+  .panel-in{max-width:760px;margin:0 auto;padding:10px 12px 12px}
+  .panel-cab{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:2px 4px 8px}
+  .panel-cab b{font-size:14px;letter-spacing:.02em;text-transform:uppercase}
+  .panel-cab a{color:var(--suave);font-size:12.5px;text-decoration:none;white-space:nowrap}
+  .panel-cab a:hover{color:var(--blanco);text-decoration:underline}
+  .lista{list-style:none;max-height:300px;overflow-y:auto;overscroll-behavior:contain}
+  .ep{width:100%;display:flex;align-items:center;gap:12px;padding:9px 8px;border:0;border-radius:8px;background:none;color:inherit;text-align:left;cursor:pointer;font:inherit}
+  .ep:hover,.ep:focus-visible{background:rgba(255,255,255,.1);outline:none}
+  .ep .ico{flex:none;width:32px;height:32px;border-radius:50%;background:var(--blanco);color:var(--verde);display:grid;place-items:center}
+  .ep .ico svg{width:14px;height:14px;fill:currentColor}
+  .ep .txt{min-width:0}
+  .ep .tit{font-size:14px;font-weight:600;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .ep .meta{font-size:12px;color:var(--suave);margin-top:2px}
+  .ep.actual{background:rgba(255,255,255,.14)}
+  .ep.actual .ico{background:var(--rojo);color:var(--blanco)}
+  .aviso-lista{padding:14px 8px;color:var(--suave);font-size:13.5px}
+  /* Móvil: la barra va abajo, así que la lista se abre hacia arriba */
+  @media (max-width:782px){
+    .cabecera .wrap{flex-direction:column-reverse}
+    .cabecera .panel{border-top:0;border-bottom:1px solid rgba(255,255,255,.15)}
+    .cabecera .pod .pod-t,.cabecera .pod .flecha{display:none}
+    .cabecera .pod{width:34px;padding:0;justify-content:center}
+    .cabecera .pop{display:none}
+    .lista{max-height:min(320px,55vh)}
+  }
+  @media (max-width:440px){ .cabecera .volver .volver-t{display:none} .cabecera .volver{padding:5px} }
   @media (prefers-reduced-motion:reduce){ .playing .dot,.bars i{animation:none} .bars i{height:10px} }
 </style>
 </head>
 <body>
+<div class="wrap" id="wrap">
 <div class="player" id="player">
   <img class="logo" src="data:image/png;base64,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" alt="Cantabria FM">
   <button class="play" id="play" aria-label="Escuchar en directo">
@@ -79,10 +120,16 @@
     <div class="top">
       <span class="name"><span class="esc">Escucha </span>Cantabria <span class="fm">FM</span></span>
       <span class="live"><span class="dot"></span><span class="live-t">En directo</span></span>
+      <button class="volver" id="volver" type="button" title="Volver a la radio en directo"><span class="dot"></span><span class="volver-t">Volver al directo</span></button>
       <span class="bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
     </div>
     <div class="status" id="status" aria-live="polite"></div>
   </div>
+  <button class="pod" id="pod" type="button" aria-expanded="false" aria-controls="panel" title="Escuchar los podcasts">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.9V21h2v-3.1A7 7 0 0 0 19 11h-2z"/></svg>
+    <span class="pod-t">Podcasts</span>
+    <svg class="flecha" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10l5 5 5-5z"/></svg>
+  </button>
   <div class="vol">
     <button class="mute" id="mute" aria-label="Silenciar">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path id="volpath" d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 8v8a4.5 4.5 0 0 0 2.5-4z"/></svg>
@@ -93,6 +140,13 @@
     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3h7v7h-2V6.4l-9.3 9.3-1.4-1.4L17.6 5H14V3zM5 5h6v2H5v12h12v-6h2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z"/></svg>
   </button>
 </div>
+<div class="panel" id="panel" hidden>
+  <div class="panel-in">
+    <div class="panel-cab"><b>Podcasts de Cantabria FM</b><a id="ivoox" href="#" target="_blank" rel="noopener">Ver todos en iVoox ↗</a></div>
+    <ul class="lista" id="lista"><li class="aviso-lista">Cargando episodios…</li></ul>
+  </div>
+</div>
+</div>
 
 <script>
 /* ====== CONFIGURACIÓN: cambia solo esto ====== */
@@ -102,7 +156,8 @@ const CONFIG = {
   // URL directa del stream (https). Admite .mp3, .aac, Icecast/Shoutcast y .m3u8 (HLS).
   stream: "https://sonic2.sistemahost.es/8108/stream",
   color: "#e30000",         // rojo Cantabria FM (etiqueta "en directo")
-  colorWeb: "#2a8647"       // verde CantabriaPress (fondo de la barra)
+  colorWeb: "#2a8647",      // verde CantabriaPress (fondo de la barra)
+  podcasts: "podcasts.json" // lista de episodios de iVoox (se actualiza sola)
 };
 /* ============================================== */
 
@@ -113,6 +168,7 @@ audio.title = CONFIG.emisora + " · En directo";
 audio.setAttribute("playsinline", "");
 document.body.appendChild(audio);   // en el documento: iPhone lo reconoce mejor en la pantalla de bloqueo
 let hls = null, playing = false;
+let episodio = null;   // null = directo; si no, el episodio de podcast que suena
 
 const ICON_PLAY = '<path d="M8 5v14l11-7z"/>';
 const ICON_PAUSE = '<path d="M6 5h4v14H6zm8 0h4v14h-4z"/>';
@@ -171,11 +227,19 @@ function stop(){
 }
 
 $("play").addEventListener("click", () => {
+  if (episodio){                       // podcast: pausa y sigue donde estaba
+    if (playing){ audio.pause(); } else audio.play().catch(()=>{});
+    return;
+  }
   if (playing){ stop(); setStatus(CONFIG.eslogan); } else start();
 });
-audio.addEventListener("playing", () => { setUI(true); setStatus("Sonando en directo"); aviso("sonando"); });
+audio.addEventListener("playing", () => {
+  setUI(true); aviso("sonando");
+  setStatus(episodio ? episodio.titulo : "Sonando en directo");
+});
+audio.addEventListener("pause", () => { if (episodio){ setUI(false); aviso("parada"); } });
 audio.addEventListener("waiting", () => { if (playing) setStatus("Cargando…"); });
-audio.addEventListener("error", () => { if (audio.getAttribute("src")){ stop(); setStatus("Emisión no disponible en este momento"); } });
+audio.addEventListener("error", () => { if (audio.getAttribute("src")){ stop(); setStatus(episodio ? "No se ha podido cargar el episodio" : "Emisión no disponible en este momento"); } });
 
 audio.volume = +$("volume").value;
 $("volume").addEventListener("input", e => { audio.volume = +e.target.value; audio.muted = false; updVol(); });
@@ -191,8 +255,8 @@ function ponerMetadatos(){
   if (!("mediaSession" in navigator)) return;
   const img = new URL("caratula.jpg", location.href).href;
   navigator.mediaSession.metadata = new MediaMetadata({
-    title: CONFIG.emisora + " · En directo",
-    artist: CONFIG.emisora,
+    title: episodio ? episodio.titulo : CONFIG.emisora + " · En directo",
+    artist: episodio ? CONFIG.emisora + " · Podcast" : CONFIG.emisora,
     album: "CantabriaPress",
     artwork: [
       { src: img, sizes: "512x512", type: "image/jpeg" }
@@ -206,10 +270,79 @@ document.addEventListener("pointerdown", () => aviso("toque"));
 audio.addEventListener("pause", ponerMetadatos);
 
 if ("mediaSession" in navigator){
-  navigator.mediaSession.setActionHandler("play", start);
-  navigator.mediaSession.setActionHandler("pause", () => { stop(); setStatus(CONFIG.eslogan); });
+  navigator.mediaSession.setActionHandler("play", () => { if (episodio) audio.play().catch(()=>{}); else start(); });
+  navigator.mediaSession.setActionHandler("pause", () => { if (episodio) audio.pause(); else { stop(); setStatus(CONFIG.eslogan); } });
   try { navigator.mediaSession.setActionHandler("stop", () => { stop(); setStatus(CONFIG.eslogan); }); } catch(e){}
 }
+
+/* ---------- Podcasts ---------- */
+let listaCargada = false;
+const panel = $("panel");
+
+// Pide a la web que agrande o encoja el hueco de la barra
+function avisarAlto(){
+  try{ if (window.parent !== window) window.parent.postMessage({cfm: "alto", alto: Math.ceil($("wrap").getBoundingClientRect().height)}, "*"); }catch(e){}
+}
+
+function abrirPanel(abrir){
+  panel.hidden = !abrir;
+  $("pod").setAttribute("aria-expanded", abrir ? "true" : "false");
+  if (abrir && !listaCargada) cargarLista();
+  avisarAlto();
+}
+$("pod").addEventListener("click", () => abrirPanel(panel.hidden));
+document.addEventListener("keydown", e => { if (e.key === "Escape" && !panel.hidden){ abrirPanel(false); $("pod").focus(); } });
+
+function fechaCorta(iso){
+  const d = new Date(iso);
+  return isNaN(d) ? "" : d.toLocaleDateString("es-ES", { day: "numeric", month: "short", year: "numeric" });
+}
+
+async function cargarLista(){
+  const ul = $("lista");
+  try{
+    // ?h= cambia cada hora: así se coge la lista nueva sin descargarla en cada visita
+    const r = await fetch(CONFIG.podcasts + "?h=" + Math.floor(Date.now() / 3600000));
+    const datos = await r.json();
+    if (datos.enlace) $("ivoox").href = datos.enlace; else $("ivoox").hidden = true;
+    ul.innerHTML = "";
+    (datos.episodios || []).forEach((ep, i) => {
+      const li = document.createElement("li");
+      const b = document.createElement("button");
+      b.className = "ep"; b.type = "button"; b.dataset.i = i;
+      b.innerHTML = '<span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></span><span class="txt"><span class="tit"></span><span class="meta"></span></span>';
+      b.querySelector(".tit").textContent = ep.titulo;
+      b.querySelector(".meta").textContent = [fechaCorta(ep.fecha), ep.duracion].filter(Boolean).join(" · ");
+      b.addEventListener("click", () => ponerEpisodio(ep, b));
+      li.appendChild(b); ul.appendChild(li);
+    });
+    if (!ul.children.length) ul.innerHTML = '<li class="aviso-lista">Todavía no hay episodios.</li>';
+    listaCargada = true;
+  }catch(e){
+    ul.innerHTML = '<li class="aviso-lista">No se han podido cargar los podcasts. Inténtalo más tarde.</li>';
+  }
+  avisarAlto();
+}
+
+function ponerEpisodio(ep, boton){
+  if (hls){ hls.destroy(); hls = null; }
+  episodio = ep;
+  document.querySelectorAll(".ep.actual").forEach(x => x.classList.remove("actual"));
+  if (boton) boton.classList.add("actual");
+  $("player").classList.add("es-podcast");
+  setStatus("Cargando: " + ep.titulo);
+  audio.src = ep.audio;
+  audio.play().catch(() => setStatus("Pulsa play para escuchar el episodio"));
+  abrirPanel(false);
+}
+
+$("volver").addEventListener("click", () => {
+  episodio = null;
+  document.querySelectorAll(".ep.actual").forEach(x => x.classList.remove("actual"));
+  $("player").classList.remove("es-podcast");
+  audio.pause();
+  start();
+});
 </script>
 </body>
 </html>
