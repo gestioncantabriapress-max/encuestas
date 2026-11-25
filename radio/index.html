@@ -42,6 +42,18 @@
   .mute svg{width:20px;height:20px;fill:currentColor}
   input[type=range]{width:90px;accent-color:var(--accent)}
   @media (max-width:420px){ input[type=range]{display:none} .name{font-size:16px} }
+  /* Modo cabecera: barra fina (?modo=cabecera) */
+  .cabecera .player{border:0;border-bottom:1px solid var(--line);border-radius:0;min-height:48px;padding:6px 16px;gap:10px}
+  .cabecera .play{width:36px;height:36px}
+  .cabecera .play svg{width:16px;height:16px}
+  .cabecera .info{display:flex;align-items:center;gap:12px}
+  .cabecera .name{font-size:15px}
+  .cabecera .status{margin-top:0}
+  .pop{flex:none;border:0;background:none;color:var(--muted);cursor:pointer;width:32px;height:32px;border-radius:6px;display:none;place-items:center}
+  .pop svg{width:18px;height:18px;fill:currentColor}
+  .pop:focus-visible{outline:2px solid var(--fg)}
+  .con-ventana .pop{display:grid}
+  @media (max-width:560px){ .cabecera .status{display:none} }
   @media (prefers-reduced-motion:reduce){ .playing .dot,.bars i{animation:none} .bars i{height:10px} }
 </style>
 </head>
@@ -64,6 +76,9 @@
     </button>
     <input type="range" id="volume" min="0" max="1" step="0.05" value="0.8" aria-label="Volumen">
   </div>
+  <button class="pop" id="pop" aria-label="Escuchar en ventana aparte" title="Escuchar en ventana aparte (sigue sonando al navegar)">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3h7v7h-2V6.4l-9.3 9.3-1.4-1.4L17.6 5H14V3zM5 5h6v2H5v12h12v-6h2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z"/></svg>
+  </button>
 </div>
 
 <script>
@@ -88,6 +103,14 @@ const VOL_ON = "M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 8v8a4.5 4.5 0 0 0 
 const VOL_OFF = "M3 9v6h4l5 5V4L7 9H3zm13.6 3 2.7-2.7-1.4-1.4-2.7 2.7-2.7-2.7-1.4 1.4 2.7 2.7-2.7 2.7 1.4 1.4 2.7-2.7 2.7 2.7 1.4-1.4z";
 
 document.documentElement.style.setProperty("--accent", CONFIG.color);
+
+// Modo: ?modo=cabecera (barra fina para la cabecera) · ?modo=ventana (ventana emergente)
+const modo = new URLSearchParams(location.search).get("modo");
+if (modo === "cabecera") document.documentElement.classList.add("cabecera", "con-ventana");
+$("pop").addEventListener("click", () => {
+  const w = window.open(location.pathname + "?modo=ventana", "cantabriafm", "width=420,height=130,resizable=yes");
+  if (w){ stop(); setStatus("Sonando en la ventana aparte"); }
+});
 $("name").textContent = CONFIG.emisora;
 const setStatus = t => $("status").textContent = t;
 setStatus(CONFIG.stream ? CONFIG.eslogan : "Falta configurar la URL del stream");
