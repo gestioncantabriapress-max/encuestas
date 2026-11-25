@@ -11,7 +11,7 @@
   var CAPA = 9000;
   var ESPERA = 6000;  // móvil: milisegundos hasta que la barra se recoge sola   // por debajo de los avisos de cookies (suelen usar 9900 o más) para no taparlos
   var ORIGEN = "https://gestioncantabriapress-max.github.io";
-  var VERSION = "8";   // súbelo al cambiar el reproductor para que los navegadores no usen la versión guardada
+  var VERSION = "9";   // súbelo al cambiar el reproductor para que los navegadores no usen la versión guardada
   var URL = ORIGEN + "/encuestas/radio/?modo=cabecera&v=" + VERSION;
 
   /* ---------- Dentro del marco de escucha continua ---------- */
@@ -42,7 +42,7 @@
   function montar() {
     var css = document.createElement("style");
     css.textContent =
-      "#cfm-radio{position:fixed;top:0;left:0;right:0;z-index:" + CAPA + ";height:" + ALTO + "px;background:#2a8647;box-shadow:0 2px 6px rgba(0,0,0,.18);transition:transform .25s ease}" +
+      "#cfm-radio{position:fixed;top:0;left:0;right:0;z-index:" + CAPA + ";height:" + ALTO + "px;background:linear-gradient(100deg,#123d27,#2a8647 55%,#3aa35e);box-shadow:0 2px 6px rgba(0,0,0,.18);transition:transform .25s ease}" +
       "#cfm-radio.cfm-oculta{transform:translateY(-110%)}" +
       "#cfm-radio iframe{display:block;width:100%;height:" + ALTO + "px;border:0}" +
       "body{padding-top:" + ALTO + "px !important}" +
@@ -68,12 +68,25 @@
 
     var barra = document.createElement("div");
     barra.id = "cfm-radio";
-    var f = document.createElement("iframe");
-    f.src = URL;
-    f.title = "Cantabria FM en directo";
-    f.setAttribute("allow", "autoplay");
-    barra.appendChild(f);
     document.body.insertBefore(barra, document.body.firstChild);
+
+    /* Carga ligera: la barra verde aparece al momento, pero el reproductor se carga
+       cuando la web del periódico ya ha terminado de cargar y el navegador está libre */
+    function cargarReproductor() {
+      if (barra.firstChild) return;
+      var f = document.createElement("iframe");
+      f.src = URL;
+      f.title = "Cantabria FM en directo";
+      f.setAttribute("allow", "autoplay");
+      barra.appendChild(f);
+    }
+    function cuandoLibre() {
+      if ("requestIdleCallback" in window) requestIdleCallback(cargarReproductor, { timeout: 2500 });
+      else setTimeout(cargarReproductor, 300);
+    }
+    if (document.readyState === "complete") cuandoLibre();
+    else window.addEventListener("load", cuandoLibre);
+    setTimeout(cargarReproductor, 6000);   // por si la web tarda mucho en terminar de cargar
 
     /* Móvil: la barra se recoge sola a los pocos segundos y vuelve al subir */
     var esMovil = window.matchMedia("(max-width:" + MOVIL + "px)");
