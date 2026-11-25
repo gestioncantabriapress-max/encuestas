@@ -58,6 +58,12 @@
   .pop svg{width:18px;height:18px;fill:currentColor}
   .con-ventana .pop{display:grid}
   .cabecera .top{flex-wrap:nowrap}
+  /* PC: todo el reproductor agrupado en el centro */
+  @media (min-width:761px){
+    .cabecera .player{justify-content:center;gap:16px}
+    .cabecera .info{flex:0 1 auto}
+    .cabecera .status{width:250px}
+  }
   @media (max-width:760px){ .cabecera .status{display:none} }
   @media (max-width:440px){ .cabecera .live-t{display:none} .cabecera .live{padding:5px} .cabecera .logo{height:32px} .cabecera .player{padding:6px 10px} }
   @media (prefers-reduced-motion:reduce){ .playing .dot,.bars i{animation:none} .bars i{height:10px} }
@@ -103,6 +109,9 @@ const CONFIG = {
 const $ = id => document.getElementById(id);
 const audio = new Audio();
 audio.preload = "none";
+audio.title = CONFIG.emisora + " · En directo";
+audio.setAttribute("playsinline", "");
+document.body.appendChild(audio);   // en el documento: iPhone lo reconoce mejor en la pantalla de bloqueo
 let hls = null, playing = false;
 
 const ICON_PLAY = '<path d="M8 5v14l11-7z"/>';
@@ -177,10 +186,29 @@ function updVol(){
   $("mute").setAttribute("aria-label", off ? "Activar sonido" : "Silenciar");
 }
 
+// Nombre e imagen de la radio en la pantalla de bloqueo / centro de control (iPhone, Android, PC)
+function ponerMetadatos(){
+  if (!("mediaSession" in navigator)) return;
+  const img = new URL("caratula.png", location.href).href;
+  navigator.mediaSession.metadata = new MediaMetadata({
+    title: CONFIG.emisora + " · En directo",
+    artist: CONFIG.emisora,
+    album: "CantabriaPress",
+    artwork: [
+      { src: img, sizes: "512x512", type: "image/png" },
+      { src: img, sizes: "256x256", type: "image/png" }
+    ]
+  });
+  navigator.mediaSession.playbackState = playing ? "playing" : "paused";
+}
+audio.addEventListener("playing", ponerMetadatos);
+audio.addEventListener("pause", ponerMetadatos);
+
 if ("mediaSession" in navigator){
-  navigator.mediaSession.metadata = new MediaMetadata({ title: "En directo", artist: CONFIG.emisora });
+  ponerMetadatos();
   navigator.mediaSession.setActionHandler("play", start);
   navigator.mediaSession.setActionHandler("pause", () => { stop(); setStatus(CONFIG.eslogan); });
+  try { navigator.mediaSession.setActionHandler("stop", () => { stop(); setStatus(CONFIG.eslogan); }); } catch(e){}
 }
 </script>
 </body>
