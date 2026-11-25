@@ -7,100 +7,116 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
 <style>
-  /* Mismo estilo que el banner de encuestas (tema Newspaper con el verde de CantabriaPress) */
   :root{
-    --ink:#111111; --muted:#767676; --line:#ededed; --bg:#ffffff; --soft:#f7f7f7;
-    --accent:#2a8647; --accent-dark:#195136; --accent-soft:#f2f8f4;
+    --fondo:#0b2117; --fondo2:#123d27; --verde:#2a8647; --verde-cla:#3fbf6a;
+    --blanco:#ffffff; --suave:rgba(255,255,255,.72); --tenue:rgba(255,255,255,.12); --borde:rgba(255,255,255,.14);
+    --rojo:#e30000;
   }
   *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:Roboto,Verdana,Geneva,sans-serif;color:var(--ink);background:transparent}
-  .cp-banner{background:var(--bg);border:1px solid var(--line)}
-  .cp-head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;border-bottom:2px solid var(--accent);flex-wrap:wrap;padding-right:14px}
-  .cp-kicker{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
-  .cp-tag{background:var(--accent);color:#fff;font-weight:500;font-size:14px;line-height:1;text-transform:uppercase;padding:9px 14px 8px;white-space:nowrap}
-  .cp-title{font-weight:700;font-size:20px;line-height:1.2;padding:8px 0}
-  .cp-count{font-size:13px;color:var(--muted);padding:8px 0}
-  .cp-count b{color:var(--accent);font-weight:900}
-  .prueba{background:#fff3cd;color:#7a5a00;font-size:12px;font-weight:700;text-align:center;padding:5px 10px;border-bottom:1px solid #f0d98c;letter-spacing:.03em}
+  body{font-family:Roboto,Verdana,Geneva,sans-serif;background:transparent;color:var(--blanco)}
+  .rb{position:relative;overflow:hidden;border-radius:10px;color:var(--blanco);
+    background:
+      radial-gradient(ellipse 60% 80% at 85% 0%, rgba(63,191,106,.28), transparent 60%),
+      radial-gradient(ellipse 50% 60% at 0% 100%, rgba(42,134,71,.35), transparent 60%),
+      linear-gradient(160deg, var(--fondo2) 0%, var(--fondo) 60%)}
+  .num{font-variant-numeric:tabular-nums}
 
-  .cp-body{display:grid;grid-template-columns:1fr 1.25fr 1.25fr}
-  .cp-col{padding:14px 18px;min-width:0}
-  .cp-col + .cp-col{border-left:1px solid var(--line)}
-  .cp-col.cant{background:var(--accent-soft)}
-  .cp-h{font-size:12px;font-weight:700;text-transform:uppercase;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--line)}
-  .cp-h::before{content:"";display:inline-block;width:3px;height:11px;background:var(--accent);margin-right:6px;vertical-align:-1px}
-  .dot{width:9px;height:9px;border-radius:50%;flex:none;display:inline-block}
+  /* Cabecera */
+  .hero{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:20px 26px 16px;border-bottom:1px solid var(--borde)}
+  .pill{display:inline-flex;align-items:center;gap:7px;background:var(--rojo);font-size:11px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;padding:5px 11px;border-radius:999px}
+  .pill i{width:7px;height:7px;border-radius:50%;background:#fff}
+  .hero h1{font-size:34px;font-weight:900;line-height:1;text-transform:uppercase;letter-spacing:-.01em;margin-top:9px}
+  .hero h1 span{color:var(--verde-cla)}
+  .escr{text-align:right;flex:none}
+  .escr .num{font-size:40px;font-weight:900;line-height:1}
+  .escr small{display:block;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--suave);margin-top:4px}
+  .prueba{background:#ffd34d;color:#3d2e00;font-size:12px;font-weight:900;letter-spacing:.06em;text-align:center;padding:6px 10px}
+
+  .tabs{display:none}
+  .cuerpo{display:grid;grid-template-columns:1.55fr 1fr;gap:18px;padding:20px 26px}
+  .card{background:rgba(255,255,255,.05);border:1px solid var(--borde);border-radius:10px;padding:16px 18px}
+  .tit{font-size:12px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:var(--suave);display:flex;justify-content:space-between;gap:10px;margin-bottom:10px}
+  .tit b{color:var(--blanco)}
+
+  /* Congreso */
+  .hemi-w{position:relative;max-width:460px;margin:0 auto}
+  .hemi{display:block;width:100%}
+  .hemi{animation:fundido .8s ease both}
+  @keyframes fundido{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  @keyframes pop{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
+  .hemi-c{position:absolute;left:0;right:0;bottom:2px;text-align:center}
+  .hemi-c .num{font-size:30px;font-weight:900;line-height:1}
+  .hemi-c small{display:block;font-size:11px;color:var(--suave);letter-spacing:.06em;text-transform:uppercase}
+  .partidos{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px;margin-top:14px}
+  .pc{background:rgba(255,255,255,.06);border-radius:8px;padding:9px 10px 8px;border-top:4px solid var(--c);min-width:0}
+  .pc .n{font-size:12.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .pc .num{font-size:30px;font-weight:900;line-height:1.05}
+  .pc .d{font-size:11.5px;font-weight:700;color:var(--suave)}
+  .sube{color:#7be29c !important}.baja{color:#ff8a8a !important}
 
   /* Cantabria */
-  .cant-seats{display:flex;gap:8px;justify-content:center;margin:8px 0 10px}
-  .cseat{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;color:#fff;font-size:11px;font-weight:700;box-shadow:0 1px 2px rgba(0,0,0,.15)}
-  .row{display:grid;grid-template-columns:108px 1fr 46px;align-items:center;gap:8px;margin:6px 0}
-  .pname{font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;white-space:nowrap;overflow:hidden}
-  .track{height:12px;background:#fff;overflow:hidden}
-  .bar{height:100%}
-  .val{font-size:13px;font-weight:700;text-align:right;font-variant-numeric:tabular-nums}
-  .dato{display:flex;justify-content:space-between;font-size:12.5px;padding:6px 0;border-top:1px solid var(--line);margin-top:8px}
-  .dato b{font-variant-numeric:tabular-nums}
-
-  /* España */
-  .hemi{display:block;width:100%;max-width:280px;margin:0 auto}
-  .tabla{width:100%;border-collapse:collapse;font-size:13px;margin-top:6px}
-  .tabla td{padding:4px 0;border-bottom:1px solid var(--line)}
-  .tabla td.n{text-align:right;font-weight:700;font-variant-numeric:tabular-nums;width:40px}
-  .tabla td.d{text-align:right;font-size:11.5px;color:var(--muted);width:42px;font-variant-numeric:tabular-nums}
-  .sube{color:#1f7a3a !important}.baja{color:#c0392b !important}
+  .cant .seats{display:flex;justify-content:center;gap:8px;margin:6px 0 16px}
+  .cseat{width:54px;height:54px;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:900;box-shadow:0 0 0 3px rgba(255,255,255,.15),0 4px 10px rgba(0,0,0,.35);animation:pop .5s both}
+  .fila{margin:9px 0}
+  .fila .top{display:flex;justify-content:space-between;font-size:13.5px;font-weight:700;margin-bottom:4px}
+  .fila .top span{display:flex;align-items:center;gap:7px}
+  .fila .top i{width:9px;height:9px;border-radius:50%}
+  .barra{height:10px;background:var(--tenue);border-radius:99px;overflow:hidden}
+  .barra div{height:100%;border-radius:99px;width:0;transition:width 1s cubic-bezier(.2,.7,.2,1)}
+  .part{display:flex;justify-content:space-between;align-items:baseline;border-top:1px solid var(--borde);margin-top:14px;padding-top:12px;font-size:13px;color:var(--suave)}
+  .part .num{font-size:24px;font-weight:900;color:var(--blanco)}
 
   /* Pactómetro */
-  .pact-txt{font-size:12.5px;color:var(--muted);margin-bottom:8px}
-  .chips{display:flex;flex-wrap:wrap;gap:6px}
-  .chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:#fff;border-radius:999px;padding:6px 10px 6px 8px;font:500 13px Roboto,sans-serif;cursor:pointer;color:var(--ink)}
-  .chip b{font-variant-numeric:tabular-nums}
-  .chip[aria-pressed="true"]{border-color:transparent;color:#fff;background:var(--c)}
-  .chip[aria-pressed="true"] .dot{background:#fff !important}
-  .chip:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-  .medidor{position:relative;height:22px;background:var(--soft);margin:14px 0 6px;display:flex;overflow:hidden}
-  .medidor span{height:100%;transition:width .3s}
-  .marca{position:absolute;top:-4px;bottom:-4px;width:2px;background:#111}
-  .marca-t{position:relative;font-size:11px;color:var(--muted);height:14px}
+  .pacto{margin:0 26px 22px;background:var(--blanco);color:#111;border-radius:10px;padding:18px 20px}
+  .pacto .tit{color:#2a8647}
+  .pacto .tit b{color:#111}
+  .chips{display:flex;flex-wrap:wrap;gap:7px}
+  .chip{display:inline-flex;align-items:center;gap:7px;border:2px solid #e6e6e6;background:#fff;border-radius:999px;padding:7px 12px 7px 9px;font:700 14px Roboto,sans-serif;color:#111;cursor:pointer;transition:transform .12s}
+  .chip:hover{transform:translateY(-1px)}
+  .chip i{width:11px;height:11px;border-radius:50%;background:var(--c)}
+  .chip b{font-weight:900}
+  .chip[aria-pressed="true"]{background:var(--c);border-color:var(--c);color:#fff}
+  .chip[aria-pressed="true"] i{background:#fff}
+  .chip:focus-visible{outline:3px solid #2a8647;outline-offset:2px}
+  .medidor{position:relative;height:34px;background:#f0f0f0;border-radius:6px;margin:18px 0 4px;display:flex;overflow:hidden}
+  .medidor span{height:100%;transition:width .35s cubic-bezier(.2,.7,.2,1)}
+  .marca{position:absolute;top:-6px;bottom:-6px;width:3px;background:#111;z-index:1}
+  .marca-t{position:relative;height:16px;font-size:12px;font-weight:700}
   .marca-t span{position:absolute;transform:translateX(-50%);white-space:nowrap}
-  .suma{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-top:6px}
-  .suma .num{font-size:30px;font-weight:900;font-variant-numeric:tabular-nums}
-  .suma .num small{font-size:14px;font-weight:500;color:var(--muted)}
-  .veredicto{font-size:13px;font-weight:700;text-align:right}
-  .veredicto.si{color:var(--accent)}
-  .limpiar{margin-top:10px;background:none;border:0;color:var(--muted);font:500 12px Roboto,sans-serif;text-decoration:underline;cursor:pointer}
+  .res{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:8px;flex-wrap:wrap}
+  .res .num{font-size:54px;font-weight:900;line-height:1}
+  .res .num small{font-size:16px;font-weight:500;color:#767676;margin-left:6px}
+  .ver{font-size:14px;font-weight:900;letter-spacing:.04em;text-transform:uppercase;padding:10px 16px;border-radius:999px;background:#f0f0f0;color:#555}
+  .ver.si{background:#2a8647;color:#fff}
+  .limpiar{background:none;border:0;color:#767676;font:500 12.5px Roboto,sans-serif;text-decoration:underline;cursor:pointer;margin-top:8px}
 
-  .src{font-size:11px;color:var(--muted);line-height:1.45;margin-top:8px}
-  .cp-foot{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:8px 18px;background:var(--soft);border-top:1px solid var(--line);font-size:11px;color:var(--muted)}
-  .cp-foot b{color:var(--accent)}
+  .pie{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:10px 26px 14px;font-size:11.5px;color:var(--suave)}
+  .pie b{color:var(--blanco)}
 
-  .cp-tabs{display:none}
-  @media (max-width:900px){
-    .cp-body{grid-template-columns:1fr 1fr}
-    .cp-col.pact{grid-column:1 / -1;border-left:0;border-top:1px solid var(--line)}
-  }
   @media (max-width:760px){
-    .cp-head{flex-wrap:nowrap;align-items:center;padding-right:10px}
-    .cp-title{display:none}
-    .cp-tag{font-size:13px;padding:9px 12px 8px}
-    .cp-count{font-size:12px;padding:0;text-align:right}
-    .cp-tabs{display:flex;border-bottom:1px solid var(--line)}
-    .cp-tabs button{flex:1;background:none;border:0;border-bottom:3px solid transparent;padding:9px 0 7px;font:700 13px Roboto,sans-serif;text-transform:uppercase;color:var(--muted);cursor:pointer}
-    .cp-tabs button.on{color:var(--accent);border-bottom-color:var(--accent)}
-    .cp-body{grid-template-columns:1fr}
-    .cp-col + .cp-col{border-left:0}
-    .cp-col.pact{border-top:0}
-    .cp-banner[data-tab="cantabria"] .t-es,.cp-banner[data-tab="cantabria"] .t-pa,
-    .cp-banner[data-tab="espana"] .t-ca,.cp-banner[data-tab="espana"] .t-pa,
-    .cp-banner[data-tab="pacto"] .t-ca,.cp-banner[data-tab="pacto"] .t-es{display:none}
-    .cp-col{padding:12px 14px}
-    .m-hide{display:none !important}
+    .hero{padding:14px 14px 12px}
+    .hero h1{font-size:22px;margin-top:7px}
+    .escr .num{font-size:28px}
+    .tabs{display:flex;gap:4px;padding:10px 12px 0}
+    .tabs button{flex:1;background:var(--tenue);border:0;border-radius:999px;padding:9px 0;color:var(--suave);font:900 12px Roboto,sans-serif;letter-spacing:.06em;text-transform:uppercase;cursor:pointer}
+    .tabs button.on{background:var(--blanco);color:var(--fondo)}
+    .cuerpo{grid-template-columns:1fr;padding:12px;gap:12px}
+    .pacto{margin:0 12px 12px;padding:16px 14px}
+    .rb[data-tab="cantabria"] .t-es,.rb[data-tab="cantabria"] .t-pa,
+    .rb[data-tab="espana"] .t-ca,.rb[data-tab="espana"] .t-pa,
+    .rb[data-tab="pacto"] .t-ca,.rb[data-tab="pacto"] .t-es{display:none}
+    .rb[data-tab="pacto"] .cuerpo{display:none}
+    .res .num{font-size:44px}
+    .hemi-c .num{font-size:22px}
+    .hemi-c small{font-size:8.5px;letter-spacing:.03em}
+    .pie{padding:8px 14px 12px}
   }
+  @media (prefers-reduced-motion:reduce){ *{animation:none !important;transition:none !important} }
 </style>
 </head>
 <body>
 
-<div class="cp-banner" id="cp-banner"></div>
+<div class="rb" id="rb"></div>
 
 <script>
 /* ============================================================
@@ -142,9 +158,11 @@ const DATA = {
 /* ============================================================
    LÓGICA
    ============================================================ */
-const el = document.getElementById("cp-banner");
+const el = document.getElementById("rb");
 const fmt = n => n.toLocaleString("es-ES",{minimumFractionDigits:1,maximumFractionDigits:1});
 const E = DATA.espana, C = DATA.cantabria;
+const sinMov = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const sigla = n => n.length > 5 ? n.split(" ").map(w=>w[0]).join("") : n;
 
 function hemicycle(p, total){
   const rows = 10, R0 = 40, R1 = 120, cx = 130, cy = 128;
@@ -157,82 +175,93 @@ function hemicycle(p, total){
     for(let j=0;j<k;j++){ const a = Math.PI - Math.PI*(j/(k-1||1)); pts.push({a, x: cx + r*Math.cos(a), y: cy - r*Math.sin(a)}); } });
   pts.sort((p1,p2)=>p2.a-p1.a);
   const colors = []; p.forEach(x=>{for(let i=0;i<x.s;i++)colors.push(x.c)});
-  while(colors.length<total)colors.push("#d6d9de");
-  const dots = pts.map((q,i)=>`<circle cx="${q.x.toFixed(1)}" cy="${q.y.toFixed(1)}" r="3.6" fill="${colors[i]}"/>`).join("");
-  return `<svg class="hemi" viewBox="0 0 260 136" role="img" aria-label="Reparto de escaños del Congreso">${dots}
-    <line x1="130" y1="2" x2="130" y2="18" stroke="#16181d" stroke-width="1.2" stroke-dasharray="2 2"/></svg>`;
+  while(colors.length<total)colors.push("rgba(255,255,255,.15)");
+  const dots = pts.map((q,i)=>`<circle cx="${q.x.toFixed(1)}" cy="${q.y.toFixed(1)}" r="3.7" fill="${colors[i]}"/>`).join("");
+  return `<svg class="hemi" viewBox="0 0 260 132" role="img" aria-label="Reparto de escaños del Congreso">${dots}
+    <line x1="130" y1="0" x2="130" y2="14" stroke="#fff" stroke-width="1.4" stroke-dasharray="2 2"/></svg>`;
+}
+
+// Números que cuentan hacia arriba al aparecer
+function contar(raiz){
+  raiz.querySelectorAll("[data-num]").forEach(n=>{
+    const fin = +n.dataset.num, dec = +(n.dataset.dec||0), suf = n.dataset.suf||"";
+    const pinta = v => n.textContent = (dec ? v.toLocaleString("es-ES",{minimumFractionDigits:dec,maximumFractionDigits:dec}) : Math.round(v)) + suf;
+    if (sinMov){ pinta(fin); return; }
+    const t0 = performance.now(), dur = 900;
+    (function paso(t){ const k = Math.min(1,(t-t0)/dur), e = 1-Math.pow(1-k,3); pinta(fin*e); if(k<1) requestAnimationFrame(paso); })(t0);
+  });
 }
 
 function render(){
   const porEsc = [...E.partidos].filter(x=>x.n!=="Otros").sort((a,b)=>b.s-a.s);
   const otros = E.partidos.find(x=>x.n==="Otros");
-  const dif = x => x.s23==null ? "" : (x.s-x.s23>0 ? `<span class="sube">+${x.s-x.s23}</span>` : x.s-x.s23<0 ? `<span class="baja">${x.s-x.s23}</span>` : "=");
-  const filas = porEsc.concat(otros?[otros]:[]).map(x=>`<tr><td><span class="dot" style="background:${x.c}"></span> ${x.n}</td><td class="n">${x.s}</td><td class="d">${dif(x)}</td></tr>`).join("");
+  const dif = x => x.s23==null ? "&nbsp;" : (x.s-x.s23>0 ? `<span class="sube">▲ ${x.s-x.s23}</span>` : x.s-x.s23<0 ? `<span class="baja">▼ ${x.s23-x.s}</span>` : "= 2023");
+  const tarjetas = porEsc.concat(otros?[otros]:[]).map(x=>`<div class="pc" style="--c:${x.c}"><div class="n">${x.n}</div><div class="num" data-num="${x.s}">0</div><div class="d">${dif(x)}</div></div>`).join("");
 
   const maxC = Math.max(...C.partidos.map(x=>x.v));
-  const cseats = C.partidos.flatMap(x=>Array(x.s).fill(x)).map(x=>`<span class="cseat" style="background:${x.c}">${x.n.length>5?x.n.split(" ").map(w=>w[0]).join(""):x.n}</span>`).join("");
-  const cbars = C.partidos.map(x=>`<div class="row"><div class="pname"><span class="dot" style="background:${x.c}"></span>${x.n}</div><div class="track"><div class="bar" style="width:${x.v/maxC*92}%;background:${x.c}"></div></div><div class="val">${fmt(x.v)}%</div></div>`).join("");
+  const cseats = C.partidos.flatMap(x=>Array(x.s).fill(x)).map((x,i)=>`<span class="cseat" style="background:${x.c};animation-delay:${300+i*120}ms">${sigla(x.n)}</span>`).join("");
+  const cfilas = C.partidos.map(x=>`<div class="fila"><div class="top"><span><i style="background:${x.c}"></i>${x.n}${x.s?` · ${x.s} ${x.s===1?"escaño":"escaños"}`:""}</span><b class="num" data-num="${x.v}" data-dec="1" data-suf="%">0</b></div><div class="barra"><div data-w="${x.v/maxC*100}" style="background:${x.c}"></div></div></div>`).join("");
 
-  const chips = porEsc.map(x=>`<button type="button" class="chip" aria-pressed="false" data-n="${x.n}" style="--c:${x.c}"><span class="dot" style="background:${x.c}"></span>${x.n} <b>${x.s}</b></button>`).join("");
+  const chips = porEsc.map(x=>`<button type="button" class="chip" aria-pressed="false" data-n="${x.n}" style="--c:${x.c}"><i></i>${x.n} <b>${x.s}</b></button>`).join("");
   const marcaPct = E.mayoria / E.total * 100;
 
   el.innerHTML = `
-    <div class="cp-head">
-      <div class="cp-kicker"><span class="cp-tag">Cantabria · 29-N</span><span class="cp-title">Resultados de las elecciones generales</span></div>
-      <div class="cp-count">Escrutado: <b>${fmt(DATA.escrutado)}%</b></div>
+    <div class="hero">
+      <div><span class="pill"><i></i>Resultados</span><h1>Elecciones generales <span>29-N</span></h1></div>
+      <div class="escr"><div class="num" data-num="${DATA.escrutado}" data-dec="1" data-suf="%">0</div><small>Escrutado</small></div>
     </div>
     ${DATA.prueba ? '<div class="prueba">DATOS DE PRUEBA · NO SON RESULTADOS REALES</div>' : ''}
-    <div class="cp-tabs" role="tablist">
+    <div class="tabs" role="tablist">
       <button data-t="cantabria" class="on" role="tab">Cantabria</button>
       <button data-t="espana" role="tab">España</button>
       <button data-t="pacto" role="tab">Pactómetro</button>
     </div>
-    <div class="cp-body">
-      <div class="cp-col cant t-ca">
-        <div class="cp-h">Cantabria · los 5 diputados</div>
-        <div class="cant-seats">${cseats}</div>
-        ${cbars}
-        <div class="dato"><span>Participación</span><b>${fmt(C.participacion)}% <span class="m-hide" style="font-weight:400;color:var(--muted)">(2023: ${fmt(C.participacion23)}%)</span></b></div>
+    <div class="cuerpo">
+      <div class="card t-es">
+        <div class="tit"><span>España · <b>Congreso</b></span><span>Participación <b>${fmt(E.participacion)}%</b></span></div>
+        <div class="hemi-w">${hemicycle(E.partidos, E.total)}<div class="hemi-c"><div class="num">${E.mayoria}</div><small>Mayoría absoluta</small></div></div>
+        <div class="partidos">${tarjetas}</div>
       </div>
-      <div class="cp-col t-es">
-        <div class="cp-h">España · Congreso</div>
-        ${hemicycle(E.partidos, E.total)}
-        <table class="tabla">${filas}</table>
-        <div class="dato"><span>Participación</span><b>${fmt(E.participacion)}% <span style="font-weight:400;color:var(--muted)">(2023: ${fmt(E.participacion23)}%)</span></b></div>
-      </div>
-      <div class="cp-col pact t-pa">
-        <div class="cp-h">Pactómetro · ¿quién suma ${E.mayoria}?</div>
-        <p class="pact-txt">Toca los partidos para sumar sus escaños y ver si llegan a la mayoría absoluta.</p>
-        <div class="chips">${chips}</div>
-        <div class="medidor" id="medidor"><i class="marca" style="left:${marcaPct}%"></i></div>
-        <div class="marca-t"><span style="left:${marcaPct}%">${E.mayoria}</span></div>
-        <div class="suma"><div class="num" id="suma">0 <small>escaños</small></div><div class="veredicto" id="veredicto">Elige partidos</div></div>
-        <button class="limpiar" id="limpiar" type="button">Empezar de nuevo</button>
+      <div class="card cant t-ca">
+        <div class="tit"><span>Cantabria · <b>5 diputados</b></span></div>
+        <div class="seats">${cseats}</div>
+        ${cfilas}
+        <div class="part"><span>Participación en Cantabria<br><small>2023: ${fmt(C.participacion23)}%</small></span><span class="num" data-num="${C.participacion}" data-dec="1" data-suf="%">0</span></div>
       </div>
     </div>
-    <div class="cp-foot"><span><b>CantabriaPress</b> · ${DATA.actualizado}</span><span>Fuente: ${DATA.fuente}</span></div>`;
+    <div class="pacto t-pa">
+      <div class="tit"><span>Pactómetro · <b>¿quién suma ${E.mayoria}?</b></span></div>
+      <div class="chips">${chips}</div>
+      <div class="medidor" id="medidor"><i class="marca" style="left:${marcaPct}%"></i></div>
+      <div class="marca-t"><span style="left:${marcaPct}%">${E.mayoria}</span></div>
+      <div class="res"><div class="num" id="suma">0<small>escaños</small></div><div class="ver" id="ver">Toca los partidos</div></div>
+      <button class="limpiar" id="limpiar" type="button">Empezar de nuevo</button>
+    </div>
+    <div class="pie"><span><b>CantabriaPress</b> · ${DATA.actualizado}</span><span>Fuente: ${DATA.fuente}</span></div>`;
+
+  contar(el);
+  requestAnimationFrame(()=>setTimeout(()=>el.querySelectorAll(".barra div").forEach(b=>b.style.width=b.dataset.w+"%"),50));
 
   // pestañas (móvil)
   el.dataset.tab = "cantabria";
-  el.querySelectorAll(".cp-tabs button").forEach(b=>b.addEventListener("click",()=>{
+  el.querySelectorAll(".tabs button").forEach(b=>b.addEventListener("click",()=>{
     el.dataset.tab = b.dataset.t;
-    el.querySelectorAll(".cp-tabs button").forEach(x=>x.classList.toggle("on", x===b));
+    el.querySelectorAll(".tabs button").forEach(x=>x.classList.toggle("on", x===b));
     sendHeight();
   }));
 
   // pactómetro
-  const elegidos = new Set();
-  const medidor = el.querySelector("#medidor");
+  const elegidos = new Set(), medidor = el.querySelector("#medidor");
   function actualizar(){
     const sel = porEsc.filter(x=>elegidos.has(x.n));
     const total = sel.reduce((a,b)=>a+b.s,0);
     medidor.querySelectorAll("span").forEach(s=>s.remove());
     sel.forEach(x=>{ const s=document.createElement("span"); s.style.width=(x.s/E.total*100)+"%"; s.style.background=x.c; medidor.appendChild(s); });
-    el.querySelector("#suma").innerHTML = `${total} <small>escaños</small>`;
-    const v = el.querySelector("#veredicto");
-    if (!sel.length){ v.textContent = "Elige partidos"; v.className = "veredicto"; }
-    else if (total >= E.mayoria){ v.textContent = "✓ Mayoría absoluta"; v.className = "veredicto si"; }
-    else { v.textContent = `Faltan ${E.mayoria - total}`; v.className = "veredicto"; }
+    el.querySelector("#suma").innerHTML = `${total}<small>escaños</small>`;
+    const v = el.querySelector("#ver");
+    if (!sel.length){ v.textContent = "Toca los partidos"; v.className = "ver"; }
+    else if (total >= E.mayoria){ v.textContent = "✓ Mayoría absoluta"; v.className = "ver si"; }
+    else { v.textContent = `Faltan ${E.mayoria - total}`; v.className = "ver"; }
   }
   el.querySelectorAll(".chip").forEach(b=>b.addEventListener("click",()=>{
     const on = !elegidos.has(b.dataset.n);
@@ -247,7 +276,7 @@ function render(){
 render();
 
 /* Avisa a la página que lo contiene de la altura (mismo aviso que el banner de encuestas) */
-function sendHeight(){ try{ parent.postMessage({cpEncuestasAltura: Math.ceil(document.getElementById("cp-banner").getBoundingClientRect().height) + 2}, "*"); }catch(e){} }
+function sendHeight(){ try{ parent.postMessage({cpEncuestasAltura: Math.ceil(document.getElementById("rb").getBoundingClientRect().height) + 2}, "*"); }catch(e){} }
 window.addEventListener("load", sendHeight);
 window.addEventListener("resize", sendHeight);
 setTimeout(sendHeight, 600); setTimeout(sendHeight, 1500);
