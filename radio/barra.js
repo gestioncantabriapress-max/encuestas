@@ -1,6 +1,7 @@
 /* Cantabria FM: barra de radio para toda la web.
    - PC: fija arriba, se oculta al bajar y reaparece al subir.
-   - Móvil: fija abajo, siempre visible.
+   - Móvil: fija abajo, siempre visible. Si Google AdSense pone su anuncio fijo
+     abajo (anuncio ancla), la barra se coloca justo encima para no quedar tapada.
    - Escucha continua: si la radio está sonando y el lector pulsa un enlace del
      periódico, la nueva página se abre debajo de la barra sin recargarla, así
      la radio no se corta. La dirección y el título del navegador se actualizan.
@@ -55,12 +56,12 @@
       "#cfm-web{position:fixed;left:0;right:0;top:" + ALTO + "px;bottom:0;width:100%;height:calc(100% - " + ALTO + "px);border:0;background:#fff}" +
       /* Móvil: barra fija abajo, siempre visible, para no chocar con el menú del tema */
       "@media (max-width:" + MOVIL + "px){" +
-        "#cfm-radio,body.admin-bar #cfm-radio,html.cfm-continuo #cfm-radio{top:auto !important;bottom:0;box-shadow:0 -2px 6px rgba(0,0,0,.18);padding-bottom:env(safe-area-inset-bottom);height:auto}" +
+        "#cfm-radio,body.admin-bar #cfm-radio,html.cfm-continuo #cfm-radio{top:auto !important;bottom:var(--cfm-anuncio,0px);transition:transform .25s ease,bottom .25s ease;box-shadow:0 -2px 6px rgba(0,0,0,.18);padding-bottom:env(safe-area-inset-bottom);height:auto}" +
         "#cfm-radio.cfm-oculta{transform:none}" +
-        "body{padding-top:0 !important;padding-bottom:" + ALTO + "px !important}" +
+        "body{padding-top:0 !important;padding-bottom:calc(" + ALTO + "px + var(--cfm-anuncio,0px)) !important}" +
         "#cfm-web{top:0;bottom:auto;height:calc(100% - " + ALTO + "px - env(safe-area-inset-bottom))}" +
         /* Recogida: la barra baja fuera de la pantalla; vuelve al subir */
-        "html.cfm-mini #cfm-radio{transform:translateY(110%) !important}" +
+        "html.cfm-mini #cfm-radio{transform:translateY(calc(110% + var(--cfm-anuncio,0px))) !important}" +
         "html.cfm-mini body{padding-bottom:0 !important}" +
         "html.cfm-mini #cfm-web{height:100%}" +
       "}";
@@ -97,6 +98,29 @@
       clearTimeout(reloj); reloj = setTimeout(recoger, ESPERA);
     }
     mostrar();
+
+    /* Móvil: anuncio ancla de AdSense abajo -> subir la barra justo encima */
+    var hueco = -1;
+    function medirAnuncio() {
+      var h = 0;
+      if (esMovil.matches && !window.__cfmContinuo) {
+        var alto = window.innerHeight;
+        var anuncios = document.querySelectorAll("ins.adsbygoogle[data-anchor-status], ins.adsbygoogle[data-anchor-shown]");
+        for (var i = 0; i < anuncios.length; i++) {
+          var a = anuncios[i];
+          if (a.getAttribute("data-anchor-status") === "dismissed") continue;
+          var st = getComputedStyle(a);
+          if (st.position !== "fixed" || st.display === "none" || st.visibility === "hidden") continue;
+          var r = a.getBoundingClientRect();
+          if (r.height < 5 || r.bottom < alto - 4 || r.top < alto / 2) continue;   // solo anuncios pegados abajo
+          h = Math.max(h, Math.round(alto - r.top));
+        }
+      }
+      if (h !== hueco) { hueco = h; html.style.setProperty("--cfm-anuncio", h + "px"); }
+    }
+    medirAnuncio();
+    setInterval(medirAnuncio, 800);   // el anuncio aparece, se recoge o se cierra en cualquier momento
+    window.addEventListener("resize", medirAnuncio);
 
     /* Al bajar se oculta, al subir reaparece (en la página o dentro del marco de escucha continua) */
     var ultima = 0, pendiente = false;
