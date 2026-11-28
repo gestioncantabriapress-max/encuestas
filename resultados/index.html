@@ -104,6 +104,18 @@
   .espera{padding:34px 26px 30px;text-align:center}
   .espera .big{font-size:26px;font-weight:900;margin-bottom:8px}
   .espera p{font-size:14px;color:var(--suave);max-width:560px;margin:0 auto;line-height:1.5}
+  /* Titulares que van saliendo */
+  .tk{display:flex;align-items:stretch;background:rgba(0,0,0,.28);border-bottom:1px solid var(--borde);min-height:44px}
+  .tk-l{flex:none;display:flex;align-items:center;gap:7px;background:var(--rojo);font-size:11px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;padding:0 14px}
+  .tk-l i{width:7px;height:7px;border-radius:50%;background:#fff;animation:late 1.2s infinite}
+  @keyframes late{50%{opacity:.25}}
+  .tk-t{position:relative;flex:1;overflow:hidden}
+  .tk-t p{position:absolute;inset:0;display:flex;align-items:center;gap:10px;padding:0 16px;font-size:15px;font-weight:700;line-height:1.25;opacity:0;transform:translateY(12px);transition:opacity .45s,transform .45s}
+  .tk-t p.on{opacity:1;transform:none}
+  .tk-t p small{flex:none;font-size:11.5px;font-weight:700;color:var(--verde-cla)}
+  .tk-n{flex:none;display:flex;align-items:center;gap:4px;padding:0 12px}
+  .tk-n button{width:7px;height:7px;border-radius:50%;border:0;padding:0;background:rgba(255,255,255,.3);cursor:pointer}
+  .tk-n button.on{background:#fff}
   .pie{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:10px 26px 14px;font-size:11.5px;color:var(--suave)}
   .pie b{color:var(--blanco)}
 
@@ -124,6 +136,11 @@
     .hemi-c .num{font-size:22px}
     .hemi-c small{font-size:8.5px;letter-spacing:.03em}
     .pie{padding:8px 14px 12px}
+    .tk{min-height:58px}
+    .tk-l{padding:0 9px;font-size:9.5px}
+    .tk-l span{display:none}
+    .tk-t p{font-size:13.5px;padding:0 10px}
+    .tk-n{display:none}
   }
   @media (prefers-reduced-motion:reduce){ *{animation:none !important;transition:none !important} }
 </style>
@@ -170,7 +187,9 @@ const DATA = {
     // v = % de voto; s = diputados (suman 5); v23/s23 = 2023 (null si el partido no se presentaba)
     partidos: []
   },
-  fuente: ""
+  fuente: "",
+  // Titulares escritos por las tareas de la noche (más reciente primero). Si está vacío, salen titulares automáticos con los datos.
+  titulares: []   // { hora: "21:40", t: "Escrutado el 50 %: ..." }
 };
 
 /* Datos inventados solo para ver el diseño: se usan si la dirección termina en #prueba */
@@ -263,6 +282,25 @@ function contar(raiz){
   });
 }
 
+/* Titulares automáticos, solo con datos (sin valoraciones) */
+function titularesAuto(){
+  const T = [], ord = [...E.partidos].filter(x=>x.n!=="Otros").sort((a,b)=>b.s-a.s);
+  const esc = n => n + (n===1?" escaño":" escaños");
+  const cant = C.partidos.filter(x=>x.s>0).map(x=>`${x.n} ${x.s}`).join(", ");
+  if (cant) T.push(`Cantabria reparte sus 5 diputados: ${cant}`);
+  const cv = [...C.partidos].sort((a,b)=>b.v-a.v)[0];
+  if (cv) T.push(`${cv.n}, primera fuerza en Cantabria con el ${fmt(cv.v)} % de los votos`);
+  if (ord[0]) T.push(`${ord[0].n}, primera fuerza en el Congreso con ${esc(ord[0].s)}`);
+  T.push(ord[0] && ord[0].s>=E.mayoria ? `${ord[0].n} logra la mayoría absoluta (${E.mayoria})` : `Ningún partido alcanza en solitario la mayoría absoluta de ${E.mayoria} escaños`);
+  const con = ord.filter(x=>x.s23!=null);
+  const sube = [...con].sort((a,b)=>(b.s-b.s23)-(a.s-a.s23))[0], baja = [...con].sort((a,b)=>(a.s-a.s23)-(b.s-b.s23))[0];
+  if (sube && sube.s>sube.s23) T.push(`${sube.n} es el que más crece: ${sube.s23} → ${sube.s} escaños`);
+  if (baja && baja.s<baja.s23) T.push(`${baja.n} es el que más retrocede: ${baja.s23} → ${baja.s} escaños`);
+  if (E.participacion) T.push(`Participación en España: ${fmt(E.participacion)} % (${fmt(E.participacion23)} % en 2023)`);
+  if (C.participacion) T.push(`Participación en Cantabria: ${fmt(C.participacion)} % (${fmt(C.participacion23)} % en 2023)`);
+  return T.map(t=>({ t }));
+}
+
 function render(){
   const porEsc = [...E.partidos].filter(x=>x.n!=="Otros").sort((a,b)=>b.s-a.s);
   const otros = E.partidos.find(x=>x.n==="Otros");
@@ -291,6 +329,7 @@ function render(){
       <div class="escr"><div class="num" data-num="${VER.escrutado}" data-dec="1" data-suf="%">0</div><small>Escrutado</small></div>
     </div>
     ${VER.prueba ? '<div class="prueba">DATOS DE PRUEBA · NO SON RESULTADOS REALES</div>' : ''}
+    <div class="tk" aria-live="polite"><div class="tk-l"><i></i><span>Última hora</span></div><div class="tk-t" id="tk"></div><div class="tk-n" id="tkn"></div></div>
     <div class="tabs" role="tablist">
       <button data-t="cantabria" class="on" role="tab">Cantabria</button>
       <button data-t="espana" role="tab">España</button>
@@ -322,6 +361,20 @@ function render(){
     <div class="pie"><span><b>CantabriaPress</b> · ${VER.actualizado}</span><span>Fuente: ${VER.fuente}</span></div>`;
 
   contar(el);
+
+  // titulares que van saliendo cada 5 segundos
+  const TIT = (VER.titulares && VER.titulares.length) ? VER.titulares : titularesAuto();
+  const tk = el.querySelector("#tk"), tkn = el.querySelector("#tkn");
+  tk.innerHTML = TIT.map(x=>`<p>${x.hora?`<small>${x.hora}</small>`:""}<span>${x.t}</span></p>`).join("");
+  tkn.innerHTML = TIT.map((_,i)=>`<button type="button" aria-label="Titular ${i+1}"></button>`).join("");
+  let ti = 0, tt;
+  const ver = i => { ti = (i+TIT.length)%TIT.length;
+    tk.querySelectorAll("p").forEach((p,j)=>p.classList.toggle("on", j===ti));
+    tkn.querySelectorAll("button").forEach((b,j)=>b.classList.toggle("on", j===ti)); };
+  const sig = () => { clearTimeout(tt); tt = setTimeout(()=>{ ver(ti+1); sig(); }, 5000); };
+  tkn.querySelectorAll("button").forEach((b,j)=>b.addEventListener("click",()=>{ ver(j); sig(); }));
+  tk.addEventListener("click",()=>{ ver(ti+1); sig(); });
+  ver(0); if (TIT.length>1) sig();
   requestAnimationFrame(()=>setTimeout(()=>el.querySelectorAll(".barra div").forEach(b=>b.style.width=b.dataset.w+"%"),50));
 
   // 2026 / 2023 en el Congreso
