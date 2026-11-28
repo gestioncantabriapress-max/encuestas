@@ -282,22 +282,19 @@ function contar(raiz){
   });
 }
 
-/* Titulares automáticos, solo con datos (sin valoraciones) */
+/* Titulares automáticos de España, solo con datos (sin valoraciones) */
 function titularesAuto(){
   const T = [], ord = [...E.partidos].filter(x=>x.n!=="Otros").sort((a,b)=>b.s-a.s);
   const esc = n => n + (n===1?" escaño":" escaños");
-  const cant = C.partidos.filter(x=>x.s>0).map(x=>`${x.n} ${x.s}`).join(", ");
-  if (cant) T.push(`Cantabria reparte sus 5 diputados: ${cant}`);
-  const cv = [...C.partidos].sort((a,b)=>b.v-a.v)[0];
-  if (cv) T.push(`${cv.n}, primera fuerza en Cantabria con el ${fmt(cv.v)} % de los votos`);
-  if (ord[0]) T.push(`${ord[0].n}, primera fuerza en el Congreso con ${esc(ord[0].s)}`);
-  T.push(ord[0] && ord[0].s>=E.mayoria ? `${ord[0].n} logra la mayoría absoluta (${E.mayoria})` : `Ningún partido alcanza en solitario la mayoría absoluta de ${E.mayoria} escaños`);
+  const puesto = ["primera","segunda","tercera","cuarta"];
+  ord.slice(0,4).forEach((x,i)=>T.push(`${x.n}, ${puesto[i]} fuerza en el Congreso con ${esc(x.s)}${x.s23!=null?` (${x.s23} en 2023)`:""}`));
+  T.splice(1,0, ord[0] && ord[0].s>=E.mayoria ? `${ord[0].n} logra la mayoría absoluta (${E.mayoria})` : `Ningún partido alcanza en solitario la mayoría absoluta de ${E.mayoria} escaños`);
   const con = ord.filter(x=>x.s23!=null);
   const sube = [...con].sort((a,b)=>(b.s-b.s23)-(a.s-a.s23))[0], baja = [...con].sort((a,b)=>(a.s-a.s23)-(b.s-b.s23))[0];
-  if (sube && sube.s>sube.s23) T.push(`${sube.n} es el que más crece: ${sube.s23} → ${sube.s} escaños`);
-  if (baja && baja.s<baja.s23) T.push(`${baja.n} es el que más retrocede: ${baja.s23} → ${baja.s} escaños`);
+  if (sube && sube.s>sube.s23) T.push(`${sube.n} es el que más crece: de ${sube.s23} a ${sube.s} escaños`);
+  if (baja && baja.s<baja.s23) T.push(`${baja.n} es el que más retrocede: de ${baja.s23} a ${baja.s} escaños`);
   if (E.participacion) T.push(`Participación en España: ${fmt(E.participacion)} % (${fmt(E.participacion23)} % en 2023)`);
-  if (C.participacion) T.push(`Participación en Cantabria: ${fmt(C.participacion)} % (${fmt(C.participacion23)} % en 2023)`);
+  if (VER.escrutado < 100) T.unshift(`Escrutado el ${fmt(VER.escrutado)} % de los votos en España`);
   return T.map(t=>({ t }));
 }
 
