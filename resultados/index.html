@@ -328,8 +328,8 @@ function render(){
     ${VER.prueba ? '<div class="prueba">DATOS DE PRUEBA · NO SON RESULTADOS REALES</div>' : ''}
     <div class="tk" aria-live="polite"><div class="tk-l"><i></i><span>Última hora</span></div><div class="tk-t" id="tk"></div><div class="tk-n" id="tkn"></div></div>
     <div class="tabs" role="tablist">
-      <button data-t="cantabria" class="on" role="tab">Cantabria</button>
-      <button data-t="espana" role="tab">España</button>
+      <button data-t="espana" class="on" role="tab">España</button>
+      <button data-t="cantabria" role="tab">Cantabria</button>
       <button data-t="pacto" role="tab">Pactómetro</button>
     </div>
     <div class="cuerpo">
@@ -384,7 +384,7 @@ function render(){
   }));
 
   // pestañas (móvil)
-  el.dataset.tab = "cantabria";
+  el.dataset.tab = "espana";
   el.querySelectorAll(".tabs button").forEach(b=>b.addEventListener("click",()=>{
     el.dataset.tab = b.dataset.t;
     el.querySelectorAll(".tabs button").forEach(x=>x.classList.toggle("on", x===b));
