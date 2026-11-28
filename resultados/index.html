@@ -415,18 +415,27 @@ function render(){
   });
 }
 function renderEspera(){
+  // Texto según el momento: antes del domingo, el domingo antes de las 20:00 o ya cerrados los colegios
+  const cierre = new Date("2026-11-29T20:00:00+01:00"), ahora = new Date();
+  const hoy = new Intl.DateTimeFormat("en-CA",{timeZone:"Europe/Madrid"}).format(ahora);
+  const h = Math.floor((cierre-ahora)/3600000), m = Math.floor((cierre-ahora)/60000)%60;
+  const espera = ahora >= cierre
+    ? { t: "Colegios cerrados: comienza el escrutinio", p: "Los primeros resultados oficiales de España y de Cantabria aparecerán aquí en unos minutos, con el pactómetro para que hagas tus propias cuentas." }
+    : hoy === "2026-11-29"
+    ? { t: `Hoy se vota · los colegios cierran a las 20:00`, p: `Quedan ${h} h ${m} min. Desde las 20:00 seguiremos aquí en directo el escrutinio oficial de España y de Cantabria, con el pactómetro para que hagas tus propias cuentas.` }
+    : { t: "Elecciones generales el domingo 29 de noviembre", p: "Los colegios abren a las 9:00 y cierran a las 20:00. Desde ese momento seguiremos aquí en directo el escrutinio oficial de España y de Cantabria, con el pactómetro para que hagas tus propias cuentas." };
   el.innerHTML = `
     <div class="hero">
       <div><span class="pill"><i></i>Noche electoral</span><h1>Elecciones generales <span>29-N</span></h1></div>
       <div class="escr"><div class="num">0,0%</div><small>Escrutado</small></div>
     </div>
     <div class="espera">
-      <div class="big">Los colegios cierran a las 20:00</div>
-      <p>Los resultados oficiales de Cantabria y de España aparecerán aquí en cuanto empiece el escrutinio, con el pactómetro para que hagas tus propias cuentas.</p>
+      <div class="big">${espera.t}</div>
+      <p>${espera.p}</p>
     </div>
     <div class="pie"><span><b>CantabriaPress</b> · Elecciones generales · 29 de noviembre de 2026</span><span>Fuente: Ministerio del Interior</span></div>`;
 }
-if (VER.datos) render(); else renderEspera();
+if (VER.datos) render(); else { renderEspera(); setInterval(renderEspera, 60000); }
 
 /* Avisa a la página que lo contiene de la altura (mismo aviso que el banner de encuestas) */
 function sendHeight(){ try{ parent.postMessage({cpEncuestasAltura: Math.ceil(document.getElementById("rb").getBoundingClientRect().height) + 2}, "*"); }catch(e){} }
