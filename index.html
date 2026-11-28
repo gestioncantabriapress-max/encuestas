@@ -65,16 +65,19 @@
 
   /* pactómetro */
   .pact{padding:12px 18px 14px;border-top:1px solid var(--line)}
-  .pact-grid{display:grid;grid-template-columns:1fr 1fr;gap:2px 28px}
-  .prow{display:grid;grid-template-columns:minmax(0,1fr) 92px;gap:3px 10px;align-items:center;margin:6px 0}
-  .plab{grid-column:1/-1;font-size:12.5px;font-weight:600}
-  .ptrack{position:relative;height:16px;background:var(--soft);display:flex}
-  .ptrack span{height:100%;width:0;transition:width .9s cubic-bezier(.2,.7,.2,1)}
-  .ptrack i{position:absolute;left:50.29%;top:-3px;bottom:-3px;border-left:2px dashed #16181d}
-  .ptot{font-size:13px;font-weight:700;text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
-  .ptot small{font-weight:500;color:var(--muted);font-size:11px}
-  .ptot.ok small{color:var(--accent);font-weight:700}
-  @media (max-width:760px){ .pact{padding:10px 14px 12px} .pact-grid{grid-template-columns:1fr} }
+  .pact-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
+  .pcard{border:1px solid var(--line);border-top:4px solid #c9cdd3;background:#fff;padding:10px 10px 12px;text-align:center;display:flex;flex-direction:column}
+  .pcard.ok{border-top-color:var(--accent);background:var(--accent-soft)}
+  .pcard .plab{font-size:12.5px;font-weight:700;line-height:1.25;min-height:46px;display:flex;align-items:center;justify-content:center}
+  .pcard .plab small{display:block;font-weight:500;color:var(--muted);font-size:10.5px}
+  .gauge{display:block;width:100%;max-width:190px;margin:4px auto 0}
+  .gauge .seg{transition:stroke-dashoffset 1s cubic-bezier(.2,.7,.2,1)}
+  .pbadge{display:inline-block;margin:6px auto 6px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.3px;padding:4px 9px;background:#eceef1;color:#555}
+  .pcard.ok .pbadge{background:var(--accent);color:#fff}
+  .pparts{font-size:11px;color:var(--muted);line-height:1.5;margin-top:auto}
+  .pparts b{color:var(--ink);font-weight:700}
+  .pparts .dot{display:inline-block;width:7px;height:7px;margin-right:3px;vertical-align:0}
+  @media (max-width:760px){ .pact{padding:10px 14px 12px} .pact-grid{grid-template-columns:1fr 1fr;gap:8px} .pcard{padding:8px 6px 10px} }
 
   .cp-quiet{padding:28px 18px;text-align:center}
   .cp-quiet .big{font-weight:900;font-size:28px;color:var(--accent);margin-bottom:6px}
@@ -193,7 +196,7 @@ const DATA = {
     { n: "PP + Vox", p: ["PP","Vox"] },
     { n: "PP + Vox + UPN + CC (apoyos a Feijóo en 2023)", p: ["PP","Vox","UPN","CC"] },
     { n: "PSOE + Frente Amplio", p: ["PSOE","Frente Amplio"] },
-    { n: "PSOE + Frente Amplio + socios de la investidura de 2023", p: ["PSOE","Frente Amplio","ERC","Junts","EH Bildu","PNV","BNG","CC"] },
+    { n: "PSOE + Frente Amplio + socios (investidura de Sánchez en 2023)", p: ["PSOE","Frente Amplio","ERC","Junts","EH Bildu","PNV","BNG","CC"] },
     { n: "PP + PSOE", p: ["PP","PSOE"] }
   ]
 };
@@ -338,6 +341,25 @@ function renderVeda(){
     <div class="cp-foot"><span>CantabriaPress</span><span>Elecciones generales · 29 de noviembre de 2026</span></div>`;
 }
 
+/* Medio círculo del pactómetro: segmentos por partido y marca de la mayoría */
+function gauge(parts, total, maj, sum){
+  const arc = "M20 100 A80 80 0 0 1 180 100";
+  let cum = 0;
+  const segs = parts.map(x=>{
+    const s = `<path class="seg" d="${arc}" pathLength="${total}" fill="none" stroke="${x.c}" stroke-width="22"
+      stroke-dasharray="${x.s} ${total}" stroke-dashoffset="${-cum}"/>`;
+    cum += x.s; return s;
+  }).join("");
+  const f = Math.PI*maj/total, cx = 100 - Math.cos(f)*80, cy = 100 - Math.sin(f)*80;
+  const ux = -Math.cos(f), uy = -Math.sin(f);
+  return `<svg class="gauge" viewBox="0 0 200 116" role="img" aria-label="${sum} de ${total} escaños; mayoría ${maj}">
+    <path d="${arc}" fill="none" stroke="#eceef1" stroke-width="22"/>${segs}
+    <line x1="${(cx-ux*16).toFixed(1)}" y1="${(cy-uy*16).toFixed(1)}" x2="${(cx+ux*16).toFixed(1)}" y2="${(cy+uy*16).toFixed(1)}" stroke="#16181d" stroke-width="2.5"/>
+    <text x="100" y="90" text-anchor="middle" font-size="34" font-weight="900" fill="${sum>=maj?"#2a8647":"#111"}" font-family="Roboto,sans-serif">${sum}</text>
+    <text x="100" y="110" text-anchor="middle" font-size="11" fill="#767676" font-family="Roboto,sans-serif">escaños · mayoría ${maj}</text>
+  </svg>`;
+}
+
 function renderResultados(){
   const r = DATA.resultados;
   if (!r){
@@ -377,12 +399,17 @@ function renderResultados(){
   const pactHTML = pactos.length ? `
     <div class="pact t-es">
       <div class="cp-h">España · pactómetro <span style="font-weight:500;text-transform:none;color:var(--muted)">(mayoría absoluta: ${e.mayoria})</span></div>
-      <div class="pact-grid">${pactos.map(pk=>`
-        <div class="prow">
-          <div class="plab">${pk.n}</div>
-          <div class="ptrack">${pk.parts.map(x=>`<span title="${x.n} ${x.s}" style="background:${x.c};width:${x.s/e.total*100}%"></span>`).join("")}<i></i></div>
-          <div class="ptot${pk.total>=e.mayoria?" ok":""}">${pk.total} <small>${pk.total>=e.mayoria?"✓ mayoría":`faltan ${e.mayoria-pk.total}`}</small></div>
-        </div>`).join("")}
+      <div class="pact-grid">${pactos.map(pk=>{
+        const ok = pk.total>=e.mayoria;
+        const m = pk.n.match(/^(.*?)\s*\((.*)\)$/);
+        const lab = m ? `<span>${m[1]}<small>${m[2]}</small></span>` : pk.n;
+        return `
+        <div class="pcard${ok?" ok":""}">
+          <div class="plab">${lab}</div>
+          ${gauge(pk.parts, e.total, e.mayoria, pk.total)}
+          <span class="pbadge">${ok?"✓ Mayoría absoluta":`Faltan ${e.mayoria-pk.total}`}</span>
+          <div class="pparts">${pk.parts.map(x=>`<span style="white-space:nowrap"><span class="dot" style="background:${x.c}"></span>${x.n} <b>${x.s}</b></span>`).join(" + ")}</div>
+        </div>`;}).join("")}
       </div>
     </div>` : "";
 
