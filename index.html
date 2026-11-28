@@ -163,7 +163,18 @@ const DATA = {
     },
     fuente: "GAD3 para El Diario Montañés (campo 16–19 nov). CIS, estudio preelectoral (675 entrevistas en Cantabria, 7–30 oct). Sigma Dos para El Mundo (2.017 entrevistas). Resultado 2023: Ministerio del Interior."
   },
-  resultados: null   // la noche del 29-N se rellena con el escrutinio
+  resultados: null   // la noche del 29-N se rellena con el escrutinio oficial, con este formato:
+  /*
+  resultados: {
+    hora: "29 nov 2026, 22:40",
+    fuente: "Ministerio del Interior, escrutinio provisional.",
+    cantabria: { escrutado: 85.2, participacion: 67.9,
+      partidos: [ { n: "PP", s: 2, v: 40.1, c: "#1d84ce" }, ... ] },     // s = escaños (suman 5), v = % de voto
+    espana: { escrutado: 80.3, participacion: 68.4, total: 350, mayoria: 176,
+      partidos: [ { n: "Frente Amplio", s: 0, v: 0, c: "#e4366e" }, ..., { n: "Otros", s: 0, c: "#c9cdd3" } ] }
+      // orden del hemiciclo: de izquierda a derecha; "Otros" = 350 − suma del resto
+  }
+  */
 };
 
 /* ============================================================
@@ -179,12 +190,32 @@ function daysLeft(){
   const ms = new Date(DATA.eleccion) - new Date();
   return Math.max(0, Math.ceil(ms / 86400000));
 }
-function header(sub){
+function header(sub, right){
   const d = daysLeft();
   return `<div class="cp-head">
     <div class="cp-kicker"><span class="cp-tag">Cantabria · 29-N</span><span class="cp-title">${sub}</span></div>
-    <div class="cp-count">${d>0?`Faltan <b>${d}</b> ${d===1?"día":"días"}<span class="m-hide"> para las elecciones generales</span>`:"Hoy se vota"}</div>
+    <div class="cp-count">${right || (d>0?`Faltan <b>${d}</b> ${d===1?"día":"días"}<span class="m-hide"> para las elecciones generales</span>`:"Hoy se vota")}</div>
   </div>`;
+}
+
+/* Comportamiento común: recuadro plegable y pestañas en móvil */
+function bindUI(){
+  el.dataset.tab = "cantabria";
+  el.dataset.open = "0";
+  const mini = el.querySelector(".cp-mini"), mbtn = el.querySelector(".mini-btn");
+  mini.addEventListener("click", ()=>{
+    const open = el.dataset.open !== "1";
+    el.dataset.open = open ? "1" : "0";
+    mini.setAttribute("aria-expanded", open);
+    mbtn.textContent = open ? "Cerrar ▴" : "Ver más ▾";
+    if (typeof sendHeight==="function") sendHeight();
+  });
+  el.querySelectorAll(".cp-tabs button").forEach(b=>b.addEventListener("click",()=>{
+    el.dataset.tab = b.dataset.t;
+    el.querySelectorAll(".cp-tabs button").forEach(x=>x.classList.toggle("on", x===b));
+    if (typeof sendHeight==="function") sendHeight();
+  }));
+  requestAnimationFrame(()=>document.querySelectorAll(".bar").forEach(b=>b.style.width=b.dataset.w+"%"));
 }
 
 function hemicycle(p, total){
@@ -274,22 +305,7 @@ function renderPolls(){
     </div>
     <div class="cp-foot"><span><b>CantabriaPress</b> · Actualizado: ${DATA.actualizado}</span><span class="m-hide">Las encuestas no se publican del 24 al 28 de noviembre (LOREG, art. 69.7).</span></div>
     </div>`;
-  el.dataset.tab = "cantabria";
-  el.dataset.open = "0";
-  const mini = el.querySelector(".cp-mini"), mbtn = el.querySelector(".mini-btn");
-  mini.addEventListener("click", ()=>{
-    const open = el.dataset.open !== "1";
-    el.dataset.open = open ? "1" : "0";
-    mini.setAttribute("aria-expanded", open);
-    mbtn.textContent = open ? "Cerrar ▴" : "Ver más ▾";
-    if (typeof sendHeight==="function") sendHeight();
-  });
-  el.querySelectorAll(".cp-tabs button").forEach(b=>b.addEventListener("click",()=>{
-    el.dataset.tab = b.dataset.t;
-    el.querySelectorAll(".cp-tabs button").forEach(x=>x.classList.toggle("on", x===b));
-    if (typeof sendHeight==="function") sendHeight();
-  }));
-  requestAnimationFrame(()=>document.querySelectorAll(".bar").forEach(b=>b.style.width=b.dataset.w+"%"));
+  bindUI();
 }
 
 function renderVeda(){
@@ -302,11 +318,71 @@ function renderVeda(){
 }
 
 function renderResultados(){
-  el.innerHTML = header("Resultados en directo") + `
+  const r = DATA.resultados;
+  if (!r){
+    el.innerHTML = header("Resultados en directo") + `
     <div class="cp-quiet">
       <div class="big">Escrutinio del 29-N</div>
-      <p>Los resultados aparecerán aquí en cuanto empiece el recuento oficial.</p>
+      <p>Los colegios cierran a las 20:00. Los resultados oficiales aparecerán aquí en cuanto empiece el recuento.</p>
+    </div>
+    <div class="cp-foot"><span>CantabriaPress</span><span>Elecciones generales · 29 de noviembre de 2026</span></div>`;
+    return;
+  }
+  const c = r.cantabria, e = r.espana;
+  const fin = c.escrutado >= 100 && e.escrutado >= 100;
+  const voteBars = (list, sm) => {
+    const max = Math.max(...list.map(x=>x.v||0), 1);
+    return list.filter(x=>x.v!=null).map(x=>`
+    <div class="row${sm?" sm":""}">
+      <div class="pname"><span class="dot" style="background:${x.c}"></span>${x.n}</div>
+      <div class="track"><div class="bar" data-w="${(x.v/(max*1.08))*100}" style="background:${x.c}"></div></div>
+      <div class="val">${fmt(x.v)}%</div>
+    </div>`).join("");
+  };
+  const cWin = c.partidos.filter(x=>x.s>0);
+  const cseats = cWin.flatMap(x=>Array(x.s).fill(x)).map(x=>`<span class="cseat" style="background:${x.c}">${x.n}</span>`).join("");
+  const clist = cWin.map(x=>`${x.n} <b>${x.s}</b>`).join(" · ");
+  const eWin = e.partidos.filter(x=>x.s>0);
+  const seats = eWin.map(x=>`<span class="seat"><span class="dot" style="background:${x.c}"></span>${x.n} <b>${x.s}</b></span>`).join("");
+  const top = [...eWin].sort((a,b)=>b.s-a.s).slice(0,3);
+  const esc = n => `${fmt(n)}%`;
+
+  el.innerHTML = header(fin ? "Resultados definitivos" : "Resultados en directo",
+      `Escrutado en Cantabria <b>${esc(c.escrutado)}</b>`) + `
+    <div class="cp-mini" role="button" aria-expanded="false">
+      <div class="mini-seats">${cWin.flatMap(x=>Array(x.s).fill(x.c)).map(col=>`<span class="ms" style="background:${col}"></span>`).join("")}</div>
+      <div class="mini-txt"><b>Cantabria:</b> ${cWin.map(x=>`${x.n} ${x.s}`).join(" · ")}<small>España: ${top.map(x=>`${x.n} ${x.s}`).join(" · ")} escaños</small></div>
+      <button class="mini-btn" type="button">Ver más ▾</button>
+    </div>
+    <div class="cp-more">
+    <div class="cp-tabs" role="tablist">
+      <button data-t="cantabria" class="on" role="tab">Cantabria</button>
+      <button data-t="espana" role="tab">España</button>
+    </div>
+    <div class="cp-body">
+      <div class="cp-col cant t-ca">
+        <div class="cp-h">Cantabria · los 5 diputados</div>
+        <div class="cant-seats">${cseats}</div>
+        <div class="cant-list">${clist}</div>
+        <p class="cant-sum">Escrutado ${esc(c.escrutado)} · Participación ${esc(c.participacion)}</p>
+        <div class="cp-h sub">Voto en Cantabria</div>
+        ${voteBars(c.partidos)}
+      </div>
+      <div class="cp-col t-es">
+        <div class="cp-h">España · escaños</div>
+        <div class="m-hide">${hemicycle(e.partidos, e.total)}</div>
+        <div class="seats">${seats}</div>
+        <div class="maj">Mayoría absoluta: ${e.mayoria} · Escrutado ${esc(e.escrutado)} · Participación ${esc(e.participacion)}</div>
+      </div>
+      <div class="cp-col t-es">
+        <div class="cp-h">España · porcentaje de voto</div>
+        ${voteBars(e.partidos.filter(x=>x.n!=="Otros"))}
+        <div class="src">${r.fuente}</div>
+      </div>
+    </div>
+    <div class="cp-foot"><span><b>CantabriaPress</b> · Actualizado: ${r.hora}</span><span class="m-hide">${fin ? "Escrutinio al 100%." : "Datos provisionales del escrutinio oficial."}</span></div>
     </div>`;
+  bindUI();
 }
 
 const today = madridToday();
