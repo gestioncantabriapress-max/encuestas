@@ -422,8 +422,9 @@ function renderEspera(){
   const espera = ahora >= cierre
     ? { t: "Colegios cerrados: comienza el escrutinio", p: "Los primeros resultados oficiales de España y de Cantabria aparecerán aquí en unos minutos, con el pactómetro para que hagas tus propias cuentas." }
     : hoy === "2026-11-29"
-    ? { t: `Hoy se vota · los colegios cierran a las 20:00`, p: `Quedan ${h} h ${m} min. Desde las 20:00 seguiremos aquí en directo el escrutinio oficial de España y de Cantabria, con el pactómetro para que hagas tus propias cuentas.` }
-    : { t: "Elecciones generales el domingo 29 de noviembre", p: "Los colegios abren a las 9:00 y cierran a las 20:00. Desde ese momento seguiremos aquí en directo el escrutinio oficial de España y de Cantabria, con el pactómetro para que hagas tus propias cuentas." };
+    ? { t: `Hoy se vota · faltan ${h} h ${m} min para el cierre`, p: "Los colegios cierran a las 20:00. Desde ese momento seguiremos aquí en directo el escrutinio oficial de España y de Cantabria, con el pactómetro para que hagas tus propias cuentas." }
+    : (()=>{ const d = Math.round((new Date("2026-11-29") - new Date(hoy))/86400000);
+        return { t: `${d===1?"Falta":"Faltan"} ${d} ${d===1?"día":"días"} para las elecciones generales`, p: "El domingo 29 de noviembre los colegios abren a las 9:00 y cierran a las 20:00. Desde ese momento seguiremos aquí en directo el escrutinio oficial de España y de Cantabria, con el pactómetro para que hagas tus propias cuentas." }; })();
   el.innerHTML = `
     <div class="hero">
       <div><span class="pill"><i></i>Noche electoral</span><h1>Elecciones generales <span>29-N</span></h1></div>
