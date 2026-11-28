@@ -208,14 +208,15 @@ function madridToday(){
   return new Intl.DateTimeFormat("en-CA",{timeZone:"Europe/Madrid"}).format(new Date());
 }
 function daysLeft(){
-  const ms = new Date(DATA.eleccion) - new Date();
-  return Math.max(0, Math.ceil(ms / 86400000));
+  // días de calendario (hora de Madrid) hasta el día de la votación
+  const ms = new Date(DATA.eleccion.slice(0,10)) - new Date(madridToday());
+  return Math.max(0, Math.round(ms / 86400000));
 }
 function header(sub, right){
-  const d = daysLeft();
+  const d = madridToday()==="2026-11-29" ? 0 : daysLeft();
   return `<div class="cp-head">
     <div class="cp-kicker"><span class="cp-tag">Cantabria · 29-N</span><span class="cp-title">${sub}</span></div>
-    <div class="cp-count">${right || (d>0?`Faltan <b>${d}</b> ${d===1?"día":"días"}<span class="m-hide"> para las elecciones generales</span>`:"Hoy se vota")}</div>
+    <div class="cp-count">${right || (d>0?`${d===1?"Falta":"Faltan"} <b>${d}</b> ${d===1?"día":"días"}<span class="m-hide"> para las elecciones generales</span>`:"Hoy se vota")}</div>
   </div>`;
 }
 
@@ -332,7 +333,7 @@ function renderPolls(){
 function renderVeda(){
   el.innerHTML = header("Cuenta atrás para el 29-N") + `
     <div class="cp-quiet">
-      <div class="big">${daysLeft()} ${daysLeft()===1?"día":"días"} para votar</div>
+      <div class="big">${today==="2026-11-29" ? "Hoy se vota" : `${daysLeft()} ${daysLeft()===1?"día":"días"} para votar`}</div>
       <p>La ley electoral no permite publicar encuestas en los cinco días previos a la votación. El domingo 29, desde las 20:00, seguiremos aquí en directo el escrutinio en Cantabria y en España.</p>
     </div>
     <div class="cp-foot"><span>CantabriaPress</span><span>Elecciones generales · 29 de noviembre de 2026</span></div>`;
@@ -428,11 +429,11 @@ function renderResultados(){
 const today = madridToday();
 const forced = (location.hash||"").replace("#","");   // #encuestas, #veda, #resultados para previsualizar
 if (forced==="veda") renderVeda();
-else if (forced==="resultados") renderResultados();
+else if (forced==="resultados") location.replace("resultados/index.html#prueba");
 else if (forced==="encuestas") renderPolls();
 else if (today <= DATA.ultimoDiaEncuestas) renderPolls();
-else if (today < "2026-11-29") renderVeda();
-else renderResultados();
+else if (new Date() < new Date(DATA.eleccion)) renderVeda();
+else location.replace("resultados/index.html");   // desde las 20:00 del 29-N: página de resultados y pactómetro
 
 /* Avisa a la página que lo contiene de la altura, para que el iframe se ajuste solo */
 function sendHeight(){ try{ parent.postMessage({cpEncuestasAltura: Math.ceil(document.getElementById("cp-banner").getBoundingClientRect().height) + 2}, "*"); }catch(e){} }
